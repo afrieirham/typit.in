@@ -90,11 +90,11 @@ export default function Home() {
         <p className="flex items-center space-x-1">
           <Pulse active={Boolean(analytics?.active)} />
           <span>
-            <b>{analytics?.active}</b> active links.
+            <b>{analytics?.active ?? 0}</b> active links.
           </span>
         </p>
         <p>
-          <b>{analytics?.created}</b> links created.
+          <b>{analytics?.created ?? 0}</b> links created.
         </p>
       </div>
       <Button
