@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
       <h1 className="text-3xl font-bold">typit.in</h1>
-      <p className="mt-1">Catchy URL shortener.</p>
+      <p className="mt-1">Catchy temporary URL shortener.</p>
       <form onSubmit={onSubmit} className="mt-4 flex w-full flex-col space-y-2">
         <Input
           required
