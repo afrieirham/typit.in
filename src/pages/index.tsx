@@ -7,30 +7,53 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { useHostname } from "@/hooks/useHostname";
+import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 export default function Home() {
-  const [link, setLink] = useState("");
-  const [loading, setLoading] = useState(false);
+  const host = useHostname();
+  const { toast } = useToast();
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const [key, setKey] = useState("");
+  const [minutes, setMinutes] = useState("60");
+  const [loading, setLoading] = useState(false);
+  const [destination, setDestination] = useState("");
+
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLink("qopy.cc/hello");
-      setLoading(false);
-    }, 1000);
+
+    try {
+      const { data } = await axios.post("/api/add", { destination, minutes });
+      setKey(data.key);
+    } catch (error) {
+      toast({
+        title: "URL cannot be empty",
+        variant: "destructive",
+      });
+    }
+    setLoading(false);
+    setDestination("");
   };
 
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
-      <h1 className="text-3xl">qopy.cc</h1>
+      <h1 className="text-3xl">TypIt.In</h1>
       <p className="mt-1 text-sm">Catchy URL shortener.</p>
 
       <form onSubmit={onSubmit} className="mt-4 flex w-full flex-col space-y-2">
-        <Input type="url" placeholder="https://youtu.be/dQw4w9WgXcQ" />
-        <Select defaultValue="60">
+        <Input
+          required
+          type="url"
+          name="destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          placeholder="https://youtu.be/dQw4w9WgXcQ"
+        />
+        <Select value={minutes} onValueChange={(value) => setMinutes(value)}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -51,10 +74,10 @@ export default function Home() {
       <Button
         asChild
         variant="link"
-        style={{ visibility: link ? "visible" : "hidden" }}
+        style={{ visibility: key ? "visible" : "hidden" }}
       >
-        <a href={`https://${link}`} className="mt-6 text-xl">
-          {link}
+        <a href={`${host}/${key}`} className="mt-6 text-xl">
+          {host}/{key}
         </a>
       </Button>
     </main>

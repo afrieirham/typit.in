@@ -7,10 +7,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{ message: string } | { key: string }>
 ) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "method not allowed" });
+  }
+
   const { destination, minutes } = req.body;
 
   if (!destination || destination === "") {
-    res.status(400).json({ message: "url required" });
+    return res.status(400).json({ message: "url required" });
   }
 
   const now = new Date();
