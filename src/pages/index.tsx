@@ -111,7 +111,7 @@ export default function Home() {
         style={{ visibility: key ? "visible" : "hidden" }}
       >
         <a href={`${host}/${key}`} className="mt-6 text-xl">
-          {host}/{key}
+          {host.replace("https://", "")}/{key}
         </a>
       </Button>
     </main>
