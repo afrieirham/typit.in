@@ -14,8 +14,12 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
 import { FormEvent, useEffect, useState } from "react";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function Home() {
+  const { data: analytics, isLoading } = useSWR("/api/analytics", fetcher);
   const router = useRouter();
   const host = useHostname();
   const { toast } = useToast();
@@ -24,8 +28,6 @@ export default function Home() {
   const [minutes, setMinutes] = useState("60");
   const [loading, setLoading] = useState(false);
   const [destination, setDestination] = useState("");
-
-  const [active, setActive] = useState(0);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -81,15 +83,18 @@ export default function Home() {
           Generate
         </Button>
       </form>
-      <div className="text-sm text-center mt-4">
+      <div
+        className="text-sm text-center mt-4"
+        style={{ visibility: isLoading ? "hidden" : "visible" }}
+      >
         <p className="flex items-center space-x-1">
-          <Pulse active={Boolean(active)} />
+          <Pulse active={Boolean(analytics?.active)} />
           <span>
-            <b>{active}</b> active links.
+            <b>{analytics?.active}</b> active links.
           </span>
         </p>
         <p>
-          <b>512</b> links created.
+          <b>{analytics?.created}</b> links created.
         </p>
       </div>
       <Button

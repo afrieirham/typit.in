@@ -42,5 +42,13 @@ export default async function handler(
       expiredAt: new Date(now.getTime() + (minutes ?? 5) * 60000).toISOString(),
     });
 
+  // increment analytics
+  const createdRef = await db.collection("analytics").doc("created").get();
+  const created = createdRef.data();
+  await db
+    .collection("analytics")
+    .doc("created")
+    .set({ value: (created?.value ?? 0) + 1 });
+
   res.status(200).json({ key });
 }
