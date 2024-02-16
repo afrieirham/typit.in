@@ -8,11 +8,30 @@ export default async function handler(
 ) {
   // get active links
   const linkRef = db.collection("links");
-  const link = await linkRef.get();
+  const links = await linkRef.get();
+
+  let expiredLinkCount = 0;
+
+  // delete expired links
+  const now = new Date();
+  await Promise.all(
+    links.docs.map((doc) => {
+      const link = doc.data();
+      const expiredAt = new Date(link.expiredAt);
+
+      if (now > expiredAt) {
+        expiredLinkCount++;
+        return db.collection("links").doc(doc.id).delete();
+      }
+    })
+  );
 
   // get total links
   const createdRef = await db.collection("analytics").doc("created").get();
   const created = createdRef.data();
 
-  res.status(200).json({ active: link.size, created: created?.value ?? 0 });
+  res.status(200).json({
+    active: links.size - expiredLinkCount,
+    created: created?.value ?? 0,
+  });
 }
