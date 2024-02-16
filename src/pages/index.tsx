@@ -11,9 +11,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { useHostname } from "@/hooks/useHostname";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { useRouter } from "next/router";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const host = useHostname();
   const { toast } = useToast();
 
@@ -39,6 +41,12 @@ export default function Home() {
     setDestination("");
   };
 
+  useEffect(() => {
+    if (router.query.message) {
+      toast({ title: String(router.query.message) });
+    }
+  }, [router]);
+
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
       <h1 className="text-3xl">TypIt.In</h1>
@@ -61,9 +69,9 @@ export default function Home() {
             <SelectItem value="5">5 minutes</SelectItem>
             <SelectItem value="30">30 minutes</SelectItem>
             <SelectItem value="60">1 hour</SelectItem>
-            <SelectItem value="360">6 hour</SelectItem>
-            <SelectItem value="720">12 hour</SelectItem>
-            <SelectItem value="1440">24 hour</SelectItem>
+            <SelectItem value="360">6 hours</SelectItem>
+            <SelectItem value="720">12 hours</SelectItem>
+            <SelectItem value="1440">24 hours</SelectItem>
           </SelectContent>
         </Select>
         <Button disabled={loading}>

@@ -39,7 +39,7 @@ export default async function handler(
     .doc(key)
     .set({
       destination,
-      expiredAt: new Date(now.getTime() + (minutes ?? 5) * 60000),
+      expiredAt: new Date(now.getTime() + (minutes ?? 5) * 60000).toISOString(),
     });
 
   res.status(200).json({ key });
