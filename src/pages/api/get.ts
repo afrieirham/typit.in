@@ -11,7 +11,7 @@ export default async function handler(
 
   // check if link exist
   if (!link) {
-    return res.status(404).json({ message: "Link not found" });
+    return res.status(404).json({ message: "link not found" });
   }
 
   const now = new Date();
@@ -20,7 +20,7 @@ export default async function handler(
   // link expired
   if (now > expiredAt) {
     await linkRef.delete();
-    return res.status(400).json({ message: "Link expired" });
+    return res.status(400).json({ message: "link expired" });
   }
 
   res.status(200).json({ destination: link.destination });

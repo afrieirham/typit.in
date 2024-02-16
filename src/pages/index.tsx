@@ -1,3 +1,4 @@
+import SEOHead from "@/components/molecule/SEOHEad";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pulse } from "@/components/ui/pulse";
@@ -38,7 +39,7 @@ export default function Home() {
       setKey(data.key);
     } catch (error) {
       toast({
-        title: "URL cannot be empty",
+        title: "url cannot be empty",
         variant: "destructive",
       });
     }
@@ -54,8 +55,15 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
+      <SEOHead
+        title="typit.in - catchiest temporary url shortener"
+        description="typit.in - catchiest temporary url shortener"
+        path="/"
+        ogPath="/og.png"
+      />
+
       <h1 className="text-3xl font-bold">typit.in</h1>
-      <p className="mt-1">Catchy temporary URL shortener.</p>
+      <p className="mt-1">catchiest temporary url shortener</p>
       <form onSubmit={onSubmit} className="mt-4 flex w-full flex-col space-y-2">
         <Input
           required
@@ -80,7 +88,7 @@ export default function Home() {
         </Select>
         <Button disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Generate
+          generate
         </Button>
       </form>
       <div
