@@ -1,4 +1,4 @@
-import SEOHead from "@/components/molecule/SEOHEad";
+import SEOHead from "@/components/molecule/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pulse } from "@/components/ui/pulse";
