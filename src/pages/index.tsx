@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Pulse } from "@/components/ui/pulse";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,8 @@ export default function Home() {
   const [minutes, setMinutes] = useState("60");
   const [loading, setLoading] = useState(false);
   const [destination, setDestination] = useState("");
+
+  const [active, setActive] = useState(0);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,9 +52,8 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
-      <h1 className="text-3xl">TypIt.In</h1>
-      <p className="mt-1 text-sm">Catchy URL shortener.</p>
-
+      <h1 className="text-3xl font-bold">typit.in</h1>
+      <p className="mt-1">Catchy URL shortener.</p>
       <form onSubmit={onSubmit} className="mt-4 flex w-full flex-col space-y-2">
         <Input
           required
@@ -79,6 +81,17 @@ export default function Home() {
           Generate
         </Button>
       </form>
+      <div className="text-sm text-center mt-4">
+        <p className="flex items-center space-x-1">
+          <Pulse active={Boolean(active)} />
+          <span>
+            <b>{active}</b> active links.
+          </span>
+        </p>
+        <p>
+          <b>512</b> links created.
+        </p>
+      </div>
       <Button
         asChild
         variant="link"
