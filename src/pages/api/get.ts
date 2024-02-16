@@ -23,7 +23,5 @@ export default async function handler(
     return res.status(400).json({ message: "Link expired" });
   }
 
-  // TODO add analytics
-
   res.status(200).json({ destination: link.destination });
 }
