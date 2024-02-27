@@ -3,15 +3,37 @@ import { db } from "@/lib/firebase";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { generate } from "random-words";
 
+type TimeLimit =
+  | "5-min"
+  | "30-min"
+  | "60-min"
+  | "360-min"
+  | "720-min"
+  | "1440-min";
+
+type ClickLimit =
+  | "1-click"
+  | "5-clicks"
+  | "10-clicks"
+  | "50-clicks"
+  | "100-clicks";
+
+interface ExtendedNextApiRequest extends NextApiRequest {
+  body: {
+    destination: string;
+    limit: TimeLimit | ClickLimit;
+  };
+}
+
 export default async function handler(
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse<{ message: string } | { key: string }>
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "method not allowed" });
   }
 
-  const { destination, minutes } = req.body;
+  const { destination, limit } = req.body;
 
   if (!destination || destination === "") {
     return res.status(400).json({ message: "url required" });
@@ -34,13 +56,25 @@ export default async function handler(
     }
   }
 
-  await db
-    .collection("links")
-    .doc(key)
-    .set({
+  const limitValue = Number(limit.split("-")[0]);
+  if (limit.includes("min")) {
+    await db
+      .collection("links")
+      .doc(key)
+      .set({
+        destination,
+        clicks: "",
+        expiredAt: new Date(
+          now.getTime() + (limitValue ?? 5) * 60000
+        ).toISOString(),
+      });
+  } else {
+    await db.collection("links").doc(key).set({
       destination,
-      expiredAt: new Date(now.getTime() + (minutes ?? 5) * 60000).toISOString(),
+      clicks: limitValue,
+      expiredAt: "",
     });
+  }
 
   // increment analytics
   const createdRef = await db.collection("analytics").doc("created").get();

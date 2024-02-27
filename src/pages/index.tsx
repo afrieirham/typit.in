@@ -6,11 +6,13 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useHostname } from "@/hooks/useHostname";
+import { SelectGroup } from "@radix-ui/react-select";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
@@ -26,7 +28,7 @@ export default function Home() {
   const { toast } = useToast();
 
   const [key, setKey] = useState("");
-  const [minutes, setMinutes] = useState("60");
+  const [limit, setLimit] = useState("60-min");
   const [loading, setLoading] = useState(false);
   const [destination, setDestination] = useState("");
 
@@ -35,7 +37,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("/api/add", { destination, minutes });
+      const { data } = await axios.post("/api/add", { destination, limit });
       setKey(data.key);
     } catch (error) {
       toast({
@@ -73,17 +75,26 @@ export default function Home() {
           onChange={(e) => setDestination(e.target.value)}
           placeholder="https://youtu.be/dQw4w9WgXcQ"
         />
-        <Select value={minutes} onValueChange={(value) => setMinutes(value)}>
+        <Select value={limit} onValueChange={(value) => setLimit(value)}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="5">5 minutes</SelectItem>
-            <SelectItem value="30">30 minutes</SelectItem>
-            <SelectItem value="60">1 hour</SelectItem>
-            <SelectItem value="360">6 hours</SelectItem>
-            <SelectItem value="720">12 hours</SelectItem>
-            <SelectItem value="1440">24 hours</SelectItem>
+            <SelectGroup>
+              <SelectLabel>by duration</SelectLabel>
+              <SelectItem value="5-min">5 minutes</SelectItem>
+              <SelectItem value="30-min">30 minutes</SelectItem>
+              <SelectItem value="60-min">1 hour</SelectItem>
+              <SelectItem value="360-min">6 hours</SelectItem>
+              <SelectItem value="720-min">12 hours</SelectItem>
+              <SelectItem value="1440-min">24 hours</SelectItem>
+              <SelectLabel>by clicks</SelectLabel>
+              <SelectItem value="1-click">1 click</SelectItem>
+              <SelectItem value="5-clicks">5 clicks</SelectItem>
+              <SelectItem value="10-clicks">10 clicks</SelectItem>
+              <SelectItem value="50-clicks">50 clicks</SelectItem>
+              <SelectItem value="100-clicks">100 clicks</SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
         <Button disabled={loading}>
