@@ -14,13 +14,23 @@ export default async function handler(
     return res.status(404).json({ message: "link not found" });
   }
 
-  const now = new Date();
-  const expiredAt = new Date(link.expiredAt);
+  if (link.expiredAt) {
+    const now = new Date();
+    const expiredAt = new Date(link.expiredAt);
 
-  // link expired
-  if (now > expiredAt) {
-    await linkRef.delete();
-    return res.status(400).json({ message: "link expired" });
+    // link expired
+    if (now > expiredAt) {
+      await linkRef.delete();
+      return res.status(400).json({ message: "link expired" });
+    }
+  } else {
+    if (link.clicks === 0) {
+      await linkRef.delete();
+      return res.status(400).json({ message: "link expired" });
+    }
+
+    // decrement clicks
+    await linkRef.update({ clicks: link.clicks - 1 });
   }
 
   res.status(200).json({ destination: link.destination });
