@@ -19,7 +19,8 @@ export default async function handler(
       const link = doc.data();
       const expiredAt = new Date(link.expiredAt);
 
-      if (now > expiredAt) {
+      // delete if expired by time or clicks
+      if (now > expiredAt || link.clicks === 0) {
         expiredLinkCount++;
         return db.collection("links").doc(doc.id).delete();
       }
