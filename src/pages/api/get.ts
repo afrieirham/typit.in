@@ -36,7 +36,9 @@ export default async function handler(
   }
 
   // decrement clicks
-  if (link.clicks) {
+  if (link.clicks === 0) {
+    await deleteLink();
+  } else {
     await linkRef.update({ clicks: link.clicks - 1 });
   }
 

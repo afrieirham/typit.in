@@ -11,12 +11,7 @@ type TimeLimit =
   | "720-min"
   | "1440-min";
 
-type ClickLimit =
-  | "1-click"
-  | "5-clicks"
-  | "10-clicks"
-  | "50-clicks"
-  | "100-clicks";
+type ClickLimit = "1-click";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -63,20 +58,23 @@ export default async function handler(
       .collection("links")
       .doc(key)
       .set({
+        filePath,
         destination,
         clicks: "",
-        filePath,
         expiredAt: new Date(
           now.getTime() + (limitValue ?? 5) * 60000
         ).toISOString(),
       });
   } else {
-    await db.collection("links").doc(key).set({
-      destination,
-      clicks: limitValue,
-      filePath,
-      expiredAt: "",
-    });
+    await db
+      .collection("links")
+      .doc(key)
+      .set({
+        filePath,
+        destination,
+        clicks: limitValue,
+        expiredAt: new Date(now.getTime() + 1440 * 60000).toISOString(),
+      });
   }
 
   // increment analytics
