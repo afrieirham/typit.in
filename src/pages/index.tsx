@@ -111,7 +111,6 @@ export default function Home() {
               <SelectItem value="1440-min">24 hours</SelectItem>
               <SelectLabel>by clicks</SelectLabel>
               <SelectItem value="1-click">1 click</SelectItem>
-              <SelectItem value="5-clicks">5 clicks</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
