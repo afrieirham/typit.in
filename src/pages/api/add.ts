@@ -22,7 +22,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     destination: string;
     limit: TimeLimit | ClickLimit;
-    filePath?: string;
+    filePath: string;
   };
 }
 
@@ -34,7 +34,7 @@ export default async function handler(
     return res.status(405).json({ message: "method not allowed" });
   }
 
-  const { destination, limit, filePath } = req.body;
+  const { destination, limit, filePath = "" } = req.body;
 
   if (!destination || destination === "") {
     return res.status(400).json({ message: "url required" });
