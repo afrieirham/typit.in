@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase-admin";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { generate } from "random-words";
 
@@ -22,6 +22,7 @@ interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     destination: string;
     limit: TimeLimit | ClickLimit;
+    filePath?: string;
   };
 }
 
@@ -33,7 +34,7 @@ export default async function handler(
     return res.status(405).json({ message: "method not allowed" });
   }
 
-  const { destination, limit } = req.body;
+  const { destination, limit, filePath } = req.body;
 
   if (!destination || destination === "") {
     return res.status(400).json({ message: "url required" });
@@ -64,6 +65,7 @@ export default async function handler(
       .set({
         destination,
         clicks: "",
+        filePath,
         expiredAt: new Date(
           now.getTime() + (limitValue ?? 5) * 60000
         ).toISOString(),
@@ -72,6 +74,7 @@ export default async function handler(
     await db.collection("links").doc(key).set({
       destination,
       clicks: limitValue,
+      filePath,
       expiredAt: "",
     });
   }

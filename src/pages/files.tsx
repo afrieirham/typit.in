@@ -1,8 +1,9 @@
 import { SelectGroup } from "@radix-ui/react-select";
 import axios from "axios";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/router";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 import SEOHead from "@/components/molecule/SEOHead";
@@ -19,10 +20,13 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useHostname } from "@/hooks/useHostname";
+import { storage } from "@/lib/firebase-web";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function Home() {
+  const inputFile = useRef<HTMLInputElement>(null);
+
   const { data: analytics, isLoading } = useSWR("/api/analytics", fetcher);
   const router = useRouter();
   const host = useHostname();
@@ -31,23 +35,50 @@ export default function Home() {
   const [key, setKey] = useState("");
   const [limit, setLimit] = useState("5-min");
   const [loading, setLoading] = useState(false);
-  const [destination, setDestination] = useState("");
+  const [file, setFile] = useState<File | null>();
+
+  const onUploadFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+
+    if (!files || files.length < 0) {
+      return;
+    }
+    setFile(files[0]);
+  };
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
 
-    try {
-      const { data } = await axios.post("/api/add", { destination, limit });
-      setKey(data.key);
-    } catch (error) {
+    if (!file) {
       toast({
-        title: "url cannot be empty",
+        title: "file cannot be empty",
         variant: "destructive",
       });
+      return;
     }
+
+    setLoading(true);
+
+    // upload file
+    const filePath = `send/${file.name}`;
+    const storageRef = ref(storage, filePath);
+    await uploadBytes(storageRef, file);
+
+    // shorten url
+    const url = await getDownloadURL(ref(storage, filePath));
+    const { data } = await axios.post("/api/add", {
+      destination: url,
+      limit,
+      filePath,
+    });
+    setKey(data.key);
+
+    // reset
     setLoading(false);
-    setDestination("");
+    setFile(null);
+    if (inputFile.current) {
+      inputFile.current.value = "";
+    }
   };
 
   useEffect(() => {
@@ -74,28 +105,23 @@ export default function Home() {
       >
         <button
           type="button"
+          role="tab"
           onClick={() => router.push("/")}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-background text-foreground shadow-sm"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 "
         >
           Link
         </button>
         <button
           type="button"
+          role="tab"
           onClick={() => router.push("/files")}
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 "
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-background text-foreground shadow-sm"
         >
           File
         </button>
       </div>
       <form onSubmit={onSubmit} className="mt-2 flex w-full flex-col space-y-2">
-        <Input
-          required
-          type="url"
-          name="destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          placeholder="https://youtu.be/dQw4w9WgXcQ"
-        />
+        <Input required type="file" onChange={onUploadFile} ref={inputFile} />
         <Select value={limit} onValueChange={(value) => setLimit(value)}>
           <SelectTrigger>
             <SelectValue />
@@ -109,9 +135,6 @@ export default function Home() {
               <SelectItem value="360-min">6 hours</SelectItem>
               <SelectItem value="720-min">12 hours</SelectItem>
               <SelectItem value="1440-min">24 hours</SelectItem>
-              <SelectLabel>by clicks</SelectLabel>
-              <SelectItem value="1-click">1 click</SelectItem>
-              <SelectItem value="5-clicks">5 clicks</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>
