@@ -133,12 +133,18 @@ export default function Home() {
           <b>{analytics?.created ?? 0}</b> links created.
         </p>
       </div>
+      <Button variant="link" asChild className="mt-6">
+        <a href="https://donate.stripe.com/14k0110oc7uIe9W3cd">
+          buy me a coffee ☕️
+        </a>
+      </Button>
       <Button
         asChild
         variant="link"
         style={{ visibility: key ? "visible" : "hidden" }}
+        className="mt-6 text-xl"
       >
-        <a href={`${host}/${key}`} className="mt-6 text-xl">
+        <a href={`${host}/${key}`}>
           {host.replace("https://", "")}/{key}
         </a>
       </Button>
