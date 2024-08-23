@@ -134,7 +134,7 @@ export default function Home() {
         </p>
       </div>
       <Button variant="link" asChild className="mt-6">
-        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce">
+        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce" target="_blank">
           buy me a coffee ☕️
         </a>
       </Button>
