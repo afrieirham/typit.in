@@ -145,6 +145,11 @@ export default function Home() {
           generate
         </Button>
       </form>
+      <Button variant="link" asChild className="mt-6">
+        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce" target="_blank">
+          buy me a coffee ☕️
+        </a>
+      </Button>
       <div
         className="text-sm text-center mt-4"
         style={{ visibility: isLoading ? "hidden" : "visible" }}
@@ -159,11 +164,6 @@ export default function Home() {
           <b>{analytics?.created ?? 0}</b> links created.
         </p>
       </div>
-      <Button variant="link" asChild className="mt-6">
-        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce" target="_blank">
-          buy me a coffee ☕️
-        </a>
-      </Button>
       <Button
         asChild
         variant="link"
