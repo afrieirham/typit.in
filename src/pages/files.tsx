@@ -27,7 +27,11 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export default function Home() {
   const inputFile = useRef<HTMLInputElement>(null);
 
-  const { data: analytics, isLoading } = useSWR("/api/analytics", fetcher);
+  const {
+    data: analytics,
+    isLoading,
+    mutate,
+  } = useSWR("/api/analytics", fetcher);
   const router = useRouter();
   const host = useHostname();
   const { toast } = useToast();
@@ -79,6 +83,7 @@ export default function Home() {
     if (inputFile.current) {
       inputFile.current.value = "";
     }
+    mutate();
   };
 
   useEffect(() => {
@@ -159,7 +164,10 @@ export default function Home() {
           </span>
         </p>
         <p>
-          <b>{analytics?.created ?? 0}</b> links created.
+          <b>{analytics?.linksCreated ?? 0}</b> links created.
+        </p>
+        <p>
+          <b>{analytics?.filesTransferred ?? 0}</b> files transferred.
         </p>
       </div>
       <Button

@@ -53,11 +53,12 @@ export default async function handler(
   }
 
   // get total links
-  const createdRef = await db.collection("analytics").doc("created").get();
-  const created = createdRef.data();
+  const counterRef = await db.collection("analytics").doc("counter").get();
+  const counter = counterRef.data();
 
   res.status(200).json({
     active: links.size - expiredLinkCount,
-    created: created?.value ?? 0,
+    linksCreated: counter?.linksCreated ?? 0,
+    filesTransferred: counter?.filesTransferred ?? 0,
   });
 }

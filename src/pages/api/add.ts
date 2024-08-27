@@ -63,12 +63,17 @@ export default async function handler(
     });
 
   // increment analytics
-  const createdRef = await db.collection("analytics").doc("created").get();
-  const created = createdRef.data();
+  const counterRef = await db.collection("analytics").doc("counter").get();
+  const counter = counterRef.data();
   await db
     .collection("analytics")
-    .doc("created")
-    .set({ value: (created?.value ?? 0) + 1 });
+    .doc("counter")
+    .set({
+      linksCreated: (counter?.linksCreated ?? 0) + 1,
+      filesTransferred: filePath
+        ? (counter?.filesTransferred ?? 0) + 1
+        : counter?.filesTransferred ?? 0,
+    });
 
   res.status(200).json({ key });
 }
