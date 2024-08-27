@@ -34,6 +34,24 @@ export default async function handler(
     })
   );
 
+  // delete all photos that is more than 24-hours
+  const [files] = await bucket.getFiles();
+  const twentyFourHoursInMillis = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  for await (const file of files) {
+    const [{ timeCreated }] = await file.getMetadata();
+
+    if (!timeCreated) break;
+    const createdAt = new Date(timeCreated);
+
+    const moreThan24Hours =
+      now.getTime() - createdAt.getTime() > twentyFourHoursInMillis;
+
+    if (moreThan24Hours) {
+      file.delete();
+    }
+  }
+
   // get total links
   const createdRef = await db.collection("analytics").doc("created").get();
   const created = createdRef.data();
