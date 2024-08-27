@@ -19,7 +19,7 @@ export default async function handler(
   const deleteLink = async () => {
     if (link.filePath) {
       const fileRef = ref(storage, link.filePath);
-      await deleteObject(fileRef);
+      if (fileRef) await deleteObject(fileRef);
     }
     await linkRef.delete();
     return res.status(400).json({ message: "link expired" });

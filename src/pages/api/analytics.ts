@@ -27,7 +27,7 @@ export default async function handler(
 
         if (link.filePath) {
           const fileRef = ref(storage, link.filePath);
-          await deleteObject(fileRef);
+          if (fileRef) await deleteObject(fileRef);
         }
         return db.collection("links").doc(doc.id).delete();
       }
