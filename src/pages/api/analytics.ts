@@ -1,7 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { db } from "@/lib/firebase-admin";
-import { storage } from "@/lib/firebase-web";
-import { deleteObject, ref } from "firebase/storage";
+import { bucket } from "@/lib/firebase-admin";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -21,13 +20,14 @@ export default async function handler(
       const link = doc.data();
       const expiredAt = new Date(link.expiredAt);
 
-      // delete if expired by time or clicks
-      if (now > expiredAt || link.clicks === 0) {
+      // delete if expired by time
+      if (now > expiredAt) {
         expiredLinkCount++;
 
         if (link.filePath) {
-          const fileRef = ref(storage, link.filePath);
-          if (fileRef) await deleteObject(fileRef);
+          const fileRef = bucket.file(link.filePath);
+          const [exist] = await fileRef.exists();
+          if (exist) await fileRef.delete();
         }
         return db.collection("links").doc(doc.id).delete();
       }

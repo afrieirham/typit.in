@@ -30,16 +30,9 @@ export default async function handler(
     const expiredAt = new Date(link.expiredAt);
 
     // link expired
-    if (now > expiredAt || link.clicks === 0) {
+    if (now > expiredAt) {
       await deleteLink();
     }
-  }
-
-  // decrement clicks
-  if (link.clicks > 0) {
-    await linkRef.update({ clicks: link.clicks - 1 });
-  } else {
-    await deleteLink();
   }
 
   res.status(200).json({ destination: link.destination });

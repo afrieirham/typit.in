@@ -11,12 +11,10 @@ type TimeLimit =
   | "720-min"
   | "1440-min";
 
-type ClickLimit = "1-click";
-
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
     destination: string;
-    limit: TimeLimit | ClickLimit;
+    limit: TimeLimit;
     filePath: string;
   };
 }
@@ -53,29 +51,16 @@ export default async function handler(
   }
 
   const limitValue = Number(limit.split("-")[0]);
-  if (limit.includes("min")) {
-    await db
-      .collection("links")
-      .doc(key)
-      .set({
-        filePath,
-        destination,
-        clicks: "",
-        expiredAt: new Date(
-          now.getTime() + (limitValue ?? 5) * 60000
-        ).toISOString(),
-      });
-  } else {
-    await db
-      .collection("links")
-      .doc(key)
-      .set({
-        filePath,
-        destination,
-        clicks: limitValue,
-        expiredAt: new Date(now.getTime() + 1440 * 60000).toISOString(),
-      });
-  }
+  await db
+    .collection("links")
+    .doc(key)
+    .set({
+      filePath,
+      destination,
+      expiredAt: new Date(
+        now.getTime() + (limitValue ?? 5) * 60000
+      ).toISOString(),
+    });
 
   // increment analytics
   const createdRef = await db.collection("analytics").doc("created").get();
