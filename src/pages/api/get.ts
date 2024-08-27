@@ -36,10 +36,10 @@ export default async function handler(
   }
 
   // decrement clicks
-  if (link.clicks === 0) {
-    await deleteLink();
-  } else {
+  if (link.clicks > 0) {
     await linkRef.update({ clicks: link.clicks - 1 });
+  } else {
+    await deleteLink();
   }
 
   res.status(200).json({ destination: link.destination });
