@@ -5,7 +5,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<{ message: string } | { destination: string }>
+  res: NextApiResponse<
+    { message: string } | { destination: string; isFile: boolean }
+  >
 ) {
   const linkRef = db.collection("links").doc(req.body.key);
   const link = (await linkRef.get()).data();
@@ -35,5 +37,7 @@ export default async function handler(
     }
   }
 
-  res.status(200).json({ destination: link.destination });
+  res
+    .status(200)
+    .json({ destination: link.destination, isFile: Boolean(link.filePath) });
 }
