@@ -35,7 +35,14 @@ function RedirectPage() {
 
   return (
     <div className="min-h-screen">
-      <iframe src={link} className="min-h-[95dvh] w-full border-none" />
+      <iframe
+        src={
+          "https://docs.google.com/viewer?embedded=true&url=" +
+          encodeURIComponent(link)
+        }
+        className="min-h-[95dvh] w-full border-none"
+      />
+
       <Link
         href="/"
         className="min-h-[5dvh] flex items-center justify-center bg-black text-white"

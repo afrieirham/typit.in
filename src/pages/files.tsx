@@ -95,14 +95,14 @@ export default function Home() {
   return (
     <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
       <SEOHead
-        title="typit.in - catchiest temporary url shortener"
-        description="typit.in - catchiest temporary url shortener"
+        title="typit.in - catchiest temporary file upload"
+        description="typit.in - catchiest temporary file upload"
         path="/"
-        ogPath="/og.png"
+        ogPath="/og-file.png"
       />
 
       <h1 className="text-3xl font-bold">typit.in</h1>
-      <p className="mt-1">catchiest temporary url shortener</p>
+      <p className="mt-1">catchiest temporary file upload</p>
       <div
         role="tablist"
         aria-orientation="horizontal"
