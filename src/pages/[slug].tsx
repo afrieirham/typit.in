@@ -1,3 +1,6 @@
+import "@cyntler/react-doc-viewer/dist/index.css";
+
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -34,23 +37,26 @@ function RedirectPage() {
   if (!link) return null;
 
   return (
-    <div className="min-h-screen">
-      <iframe
-        src={
-          "https://docs.google.com/viewer?embedded=true&url=" +
-          encodeURIComponent(link)
-        }
-        className="min-h-[95dvh] w-full border-none"
+    <div className="">
+      <DocViewer
+        className="max-h-[95dvh] overflow-scroll -mt-0"
+        documents={[{ uri: `/api/proxy?url=${encodeURIComponent(link)}` }]}
+        config={{
+          header: {
+            disableFileName: true,
+            disableHeader: true,
+          },
+          pdfVerticalScrollByDefault: true,
+        }}
+        pluginRenderers={DocViewerRenderers}
       />
-
-      <Link
-        href="/"
-        className="min-h-[5dvh] flex items-center justify-center bg-black text-white"
-      >
-        <span className="text-xs">
-          shared via <b className="hover:underline">typit.in</b>
-        </span>
-      </Link>
+      <div className="min-h-[5dvh] fixed w-full bottom-0 z-10 bg-black flex items-center justify-center text-white px-4">
+        <Link href="/" className="">
+          <span className="text-xs">
+            shared via <b className="hover:underline">typit.in</b>
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }
