@@ -1,53 +1,126 @@
-import Link from "next/link";
+"use client";
+import { Loader2 } from "lucide-react";
+// import Link from "next/link";
+import { useState } from "react";
 
-import { LatestPost } from "@/app/_components/post";
-import { api, HydrateClient } from "@/trpc/server";
+// import { LatestPost } from "@/app/_components/post";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useHostName } from "@/hooks/useHostName";
+// import { api, HydrateClient } from "@/trpc/server";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+export default function Home() {
+  // const hello = await api.post.hello({ text: "from tRPC" });
 
-  void api.post.getLatest.prefetch();
+  // void api.post.getLatest.prefetch();
+
+  const host = useHostName();
+
+  const [key, setKey] = useState("");
+  const [limit, setLimit] = useState("5-min");
+  const [loading, setLoading] = useState(false);
+  const [destination, setDestination] = useState("");
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-          </div>
-
-          <LatestPost />
-        </div>
-      </main>
-    </HydrateClient>
+    // <HydrateClient>
+    <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
+      <h1 className="text-3xl font-bold">typit.in</h1>
+      <p className="mt-1">catchiest temporary url shortener</p>
+      <div
+        role="tablist"
+        aria-orientation="horizontal"
+        className="bg-muted text-muted-foreground mt-4 grid h-10 w-full grid-cols-2 items-center justify-center rounded-md p-1"
+      >
+        <button
+          type="button"
+          // onClick={() => router.push("/")}
+          className="ring-offset-background focus-visible:ring-ring bg-background text-foreground inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+        >
+          Link
+        </button>
+        <button
+          type="button"
+          // onClick={() => router.push("/files")}
+          className="ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+        >
+          File
+        </button>
+      </div>
+      <form
+        // onSubmit={onSubmit}
+        className="mt-2 flex w-full flex-col space-y-2"
+      >
+        <Input
+          required
+          type="url"
+          name="destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          placeholder="https://youtu.be/dQw4w9WgXcQ"
+        />
+        <Select value={limit} onValueChange={(value) => setLimit(value)}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>by duration</SelectLabel>
+              <SelectItem value="5-min">5 minutes</SelectItem>
+              <SelectItem value="30-min">30 minutes</SelectItem>
+              <SelectItem value="60-min">1 hour</SelectItem>
+              <SelectItem value="360-min">6 hours</SelectItem>
+              <SelectItem value="720-min">12 hours</SelectItem>
+              <SelectItem value="1440-min">24 hours</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Button disabled={loading}>
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          generate
+        </Button>
+      </form>
+      <Button variant="link" asChild className="mt-6">
+        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce" target="_blank">
+          buy me a coffee ☕️
+        </a>
+      </Button>
+      {/* <div
+          className="mt-4 text-center text-sm"
+          style={{ visibility: isLoading ? "hidden" : "visible" }}
+        >
+          <p className="flex items-center space-x-1">
+            <Pulse active={Boolean(analytics?.active)} />
+            <span>
+              <b>{analytics?.active ?? 0}</b> active links.
+            </span>
+          </p>
+          <p>
+            <b>{analytics?.linksCreated ?? 0}</b> links created.
+          </p>
+          <p>
+            <b>{analytics?.filesTransferred ?? 0}</b> files transferred.
+          </p>
+        </div> */}
+      <Button
+        asChild
+        variant="link"
+        style={{ visibility: key ? "visible" : "hidden" }}
+        className="mt-6 text-xl"
+      >
+        <a href={`${host}/${key}`}>
+          {host.replace("https://", "")}/{key}
+        </a>
+      </Button>
+    </main>
+    // </HydrateClient>
   );
 }
