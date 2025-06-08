@@ -1,126 +1,100 @@
 "use client";
-import { Loader2 } from "lucide-react";
-// import Link from "next/link";
 import { useState } from "react";
 
-// import { LatestPost } from "@/app/_components/post";
+import copy from "copy-to-clipboard";
+import { Check, Copy } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useHostName } from "@/hooks/useHostName";
-// import { api, HydrateClient } from "@/trpc/server";
+
+import FileStorageForm from "./_components/file-storage-form";
+import TextSharingForm from "./_components/text-sharing-form";
+import UrlShortenerForm from "./_components/url-shortener-form";
 
 export default function Home() {
-  // const hello = await api.post.hello({ text: "from tRPC" });
+  const hostname = useHostName();
 
-  // void api.post.getLatest.prefetch();
+  const [selectedForm, setSelectedForm] = useState<"url" | "file" | "text">(
+    "url",
+  );
+  const [copied, setCopied] = useState(false);
+  const [linkCode, setLinkCode] = useState("sample");
 
-  const host = useHostName();
+  const title = {
+    url: "url shortener",
+    file: "file storage",
+    text: "text sharing",
+  };
 
-  const [key, setKey] = useState("");
-  const [limit, setLimit] = useState("5-min");
-  const [loading, setLoading] = useState(false);
-  const [destination, setDestination] = useState("");
+  const copyToClipboard = async () => {
+    copy(`${hostname}/${linkCode}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    // <HydrateClient>
-    <main className="mx-auto flex h-[100vh] max-w-xs flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold">typit.in</h1>
-      <p className="mt-1">catchiest temporary url shortener</p>
-      <div
-        role="tablist"
-        aria-orientation="horizontal"
-        className="bg-muted text-muted-foreground mt-4 grid h-10 w-full grid-cols-2 items-center justify-center rounded-md p-1"
-      >
-        <button
-          type="button"
-          // onClick={() => router.push("/")}
-          className="ring-offset-background focus-visible:ring-ring bg-background text-foreground inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap shadow-sm transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-        >
-          Link
-        </button>
-        <button
-          type="button"
-          // onClick={() => router.push("/files")}
-          className="ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-        >
-          File
-        </button>
+    <div className="container mx-auto max-w-md px-3 py-10">
+      <div className="mb-8 text-center">
+        <h1 className="mb-2 text-2xl font-bold">typit.in</h1>
+        <p className="mb-6 text-gray-600">
+          catchiest temporary url for {title[selectedForm]}
+        </p>
+        <div className="flex space-x-2">
+          <Button
+            variant={selectedForm === "url" ? "default" : "outline"}
+            onClick={() => setSelectedForm("url")}
+            className="flex-1"
+          >
+            URL Shortener
+          </Button>
+          <Button
+            variant={selectedForm === "file" ? "default" : "outline"}
+            onClick={() => setSelectedForm("file")}
+            className="flex-1"
+          >
+            File Storage
+          </Button>
+          <Button
+            variant={selectedForm === "text" ? "default" : "outline"}
+            onClick={() => setSelectedForm("text")}
+            className="flex-1"
+          >
+            Text Sharing
+          </Button>
+        </div>
       </div>
-      <form
-        // onSubmit={onSubmit}
-        className="mt-2 flex w-full flex-col space-y-2"
-      >
-        <Input
-          required
-          type="url"
-          name="destination"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-          placeholder="https://youtu.be/dQw4w9WgXcQ"
-        />
-        <Select value={limit} onValueChange={(value) => setLimit(value)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>by duration</SelectLabel>
-              <SelectItem value="5-min">5 minutes</SelectItem>
-              <SelectItem value="30-min">30 minutes</SelectItem>
-              <SelectItem value="60-min">1 hour</SelectItem>
-              <SelectItem value="360-min">6 hours</SelectItem>
-              <SelectItem value="720-min">12 hours</SelectItem>
-              <SelectItem value="1440-min">24 hours</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          generate
-        </Button>
-      </form>
-      <Button variant="link" asChild className="mt-6">
-        <a href="https://donate.stripe.com/eVa3dd2wk9CQaXK3ce" target="_blank">
-          buy me a coffee ☕️
-        </a>
-      </Button>
-      {/* <div
-          className="mt-4 text-center text-sm"
-          style={{ visibility: isLoading ? "hidden" : "visible" }}
-        >
-          <p className="flex items-center space-x-1">
-            <Pulse active={Boolean(analytics?.active)} />
-            <span>
-              <b>{analytics?.active ?? 0}</b> active links.
-            </span>
-          </p>
-          <p>
-            <b>{analytics?.linksCreated ?? 0}</b> links created.
-          </p>
-          <p>
-            <b>{analytics?.filesTransferred ?? 0}</b> files transferred.
-          </p>
-        </div> */}
-      <Button
-        asChild
-        variant="link"
-        style={{ visibility: key ? "visible" : "hidden" }}
-        className="mt-6 text-xl"
-      >
-        <a href={`${host}/${key}`}>
-          {host.replace("https://", "")}/{key}
-        </a>
-      </Button>
-    </main>
-    // </HydrateClient>
+
+      <div>
+        {selectedForm === "url" && <UrlShortenerForm />}
+        {selectedForm === "file" && <FileStorageForm />}
+        {selectedForm === "text" && <TextSharingForm />}
+      </div>
+
+      <div className="mt-8 border-t pt-6 text-center">
+        <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 p-6">
+          <a
+            href={`${hostname}/${linkCode}`}
+            className="cursor-pointer font-mono text-2xl leading-relaxed font-bold break-all text-gray-800 hover:underline"
+          >
+            typit.in/{linkCode}
+          </a>
+        </div>
+        <div className="mt-4 flex items-center justify-between">
+          <Button
+            onClick={copyToClipboard}
+            variant="outline"
+            size="sm"
+            className="flex w-full items-center"
+          >
+            {copied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )}
+            {copied ? "Copied!" : "Copy URL"}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
