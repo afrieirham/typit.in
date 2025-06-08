@@ -15,7 +15,7 @@ export default function Home() {
   const hostname = useHostName();
 
   const [selectedForm, setSelectedForm] = useState<"url" | "file" | "text">(
-    "text",
+    "url",
   );
 
   const [copied, setCopied] = useState(false);
