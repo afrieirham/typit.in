@@ -11,12 +11,12 @@ import FileStorageForm from "./_components/file-storage-form";
 import TextSharingForm from "./_components/text-sharing-form";
 import UrlShortenerForm from "./_components/url-shortener-form";
 
+type FormType = "url" | "file" | "text";
+
 export default function Home() {
   const hostname = useHostName();
 
-  const [selectedForm, setSelectedForm] = useState<"url" | "file" | "text">(
-    "url",
-  );
+  const [selectedForm, setSelectedForm] = useState<FormType>("url");
 
   const [copied, setCopied] = useState(false);
   const [linkCode, setLinkCode] = useState("sample");
