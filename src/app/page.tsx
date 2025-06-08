@@ -15,8 +15,9 @@ export default function Home() {
   const hostname = useHostName();
 
   const [selectedForm, setSelectedForm] = useState<"url" | "file" | "text">(
-    "url",
+    "text",
   );
+
   const [copied, setCopied] = useState(false);
   const [linkCode, setLinkCode] = useState("sample");
 
@@ -33,7 +34,7 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto max-w-md px-3 py-10">
+    <div className="container mx-auto max-w-lg px-3 py-10">
       <div className="mb-8 text-center">
         <h1 className="mb-2 text-2xl font-bold">typit.in</h1>
         <p className="mb-6 text-gray-600">
