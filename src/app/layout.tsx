@@ -1,13 +1,12 @@
 import "@/styles/globals.css";
 
-import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "typit.in - catchiest temporary url shortener",
-  description: "typit.in - catchiest temporary url shortener",
+  description: "Share links, files, or notes, temporarily - just typit.in.",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
