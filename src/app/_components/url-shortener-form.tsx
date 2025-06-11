@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -16,13 +18,13 @@ import {
 export default function UrlShortenerForm() {
   const [formData, setFormData] = useState({
     url: "",
-    duration: "5",
+    limit: "duration-5",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert("Contact form submitted: " + JSON.stringify(formData));
-    setFormData({ url: "", duration: "" });
+    setFormData({ url: "", limit: "" });
   };
 
   const handleChange = (
@@ -48,22 +50,31 @@ export default function UrlShortenerForm() {
       </div>
       <div className="">
         <Select
-          name="duration"
-          value={formData.duration}
+          name="limit"
+          value={formData.limit}
           onValueChange={(value) =>
-            setFormData((prev) => ({ ...prev, duration: value }))
+            setFormData((prev) => ({ ...prev, limit: value }))
           }
         >
           <SelectTrigger className="h-10 w-full">
             <SelectValue placeholder="Select a form" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="5">5 minutes</SelectItem>
-            <SelectItem value="30">30 minutes</SelectItem>
-            <SelectItem value="60">1 hour</SelectItem>
-            <SelectItem value="360">6 hours</SelectItem>
-            <SelectItem value="720">12 hours</SelectItem>
-            <SelectItem value="1440">24 hours</SelectItem>
+            <SelectGroup>
+              <SelectLabel>by duration</SelectLabel>
+              <SelectItem value="duration-5">5 minutes</SelectItem>
+              <SelectItem value="duration-30">30 minutes</SelectItem>
+              <SelectItem value="duration-60">1 hour</SelectItem>
+              <SelectItem value="duration-360">6 hours</SelectItem>
+              <SelectItem value="duration-720">12 hours</SelectItem>
+              <SelectItem value="duration-1440">24 hours</SelectItem>
+              <SelectLabel>by visits</SelectLabel>
+              <SelectItem value="visit-1">1 visit</SelectItem>
+              <SelectItem value="visit-5">5 visits</SelectItem>
+              <SelectItem value="visit-10">10 visits</SelectItem>
+              <SelectItem value="visit-50">50 visits</SelectItem>
+              <SelectItem value="visit-100">100 visits</SelectItem>
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>
