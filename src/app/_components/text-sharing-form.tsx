@@ -40,7 +40,7 @@ function TextSharingForm() {
           name="text"
           value={formData.text}
           onChange={handleChange}
-          placeholder="type your message here..."
+          placeholder="type your notes here..."
           className="min-h-44 text-sm normal-case"
           required
         />
