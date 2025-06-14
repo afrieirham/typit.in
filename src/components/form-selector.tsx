@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 
-import copy from "copy-to-clipboard";
-import { Check, Copy } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import { useHostName } from "@/hooks/useHostName";
 
 import FileStorageForm from "../app/_components/file-storage-form";
 import TextSharingForm from "../app/_components/text-sharing-form";
@@ -15,23 +11,12 @@ import UrlShortenerForm from "../app/_components/url-shortener-form";
 type FormType = "url" | "file" | "text";
 
 function FormSelector({ initial = "url" }: { initial: FormType }) {
-  const hostname = useHostName();
-
   const [selectedForm, setSelectedForm] = useState<FormType>(initial);
-
-  const [copied, setCopied] = useState(false);
-  const [linkCode, setLinkCode] = useState("sample");
 
   const title = {
     url: "links",
     file: "files",
     text: "notes",
-  };
-
-  const copyToClipboard = async () => {
-    copy(`${hostname}/${linkCode}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -70,32 +55,6 @@ function FormSelector({ initial = "url" }: { initial: FormType }) {
         {selectedForm === "url" && <UrlShortenerForm />}
         {selectedForm === "file" && <FileStorageForm />}
         {selectedForm === "text" && <TextSharingForm />}
-      </div>
-
-      <div className="mt-8 border-t pt-6 text-center">
-        <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 p-6">
-          <a
-            href={`${hostname}/${linkCode}`}
-            className="cursor-pointer font-mono text-2xl leading-relaxed font-bold break-all text-gray-800 hover:underline"
-          >
-            typit.in/{linkCode}
-          </a>
-        </div>
-        <div className="mt-4 flex items-center justify-between">
-          <Button
-            onClick={copyToClipboard}
-            variant="outline"
-            size="sm"
-            className="flex w-full items-center"
-          >
-            {copied ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
-            {copied ? "Copied!" : "Copy URL"}
-          </Button>
-        </div>
       </div>
     </div>
   );
