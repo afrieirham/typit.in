@@ -4,6 +4,15 @@ import { generate } from "random-words";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const linkRouter = createTRPCRouter({
+  getLinksAnalytics: publicProcedure.query(async ({ ctx }) => {
+    const url = await ctx.db.createdLinkLog.count({ where: { type: "url" } });
+    const file = await ctx.db.createdLinkLog.count({ where: { type: "file" } });
+    const note = await ctx.db.createdLinkLog.count({ where: { type: "note" } });
+
+    const active = await ctx.db.link.count();
+
+    return { url: url + 7841, file: file + 246, note, active };
+  }),
   createShortLink: publicProcedure
     .input(
       z.object({

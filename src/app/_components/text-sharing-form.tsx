@@ -112,7 +112,12 @@ function TextSharingForm() {
             </SelectContent>
           </Select>
         </div>
-        <Button loading={loading} type="submit" className="h-10 w-full">
+        <Button
+          loading={loading}
+          disabled={loading}
+          type="submit"
+          className="h-10 w-full"
+        >
           Generate
         </Button>
       </form>
