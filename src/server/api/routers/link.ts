@@ -47,6 +47,8 @@ export const linkRouter = createTRPCRouter({
         },
       });
 
+      await ctx.db.createdLinkLog.create({ data: { type: "url" } });
+
       return link.code;
     }),
 
@@ -92,6 +94,8 @@ export const linkRouter = createTRPCRouter({
           content: input.content,
         },
       });
+
+      await ctx.db.createdLinkLog.create({ data: { type: "note" } });
 
       return link.code;
     }),

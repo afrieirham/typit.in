@@ -24,3 +24,15 @@ model Link {
 
     @@index([code])
 }
+
+model CreatedLinkLog {
+    id        String   @id @default(cuid())
+    type      LinkType
+    createdAt DateTime @default(now())
+}
+
+enum LinkType {
+    url
+    file
+    note
+}
