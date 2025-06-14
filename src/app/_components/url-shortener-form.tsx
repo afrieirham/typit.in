@@ -41,7 +41,7 @@ export default function UrlShortenerForm() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const create = api.link.create.useMutation({
+  const create = api.link.createShortLink.useMutation({
     onSuccess: (data) => {
       setCode(data);
       setFormData(INITIAL_VALUE);
