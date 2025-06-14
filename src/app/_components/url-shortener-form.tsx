@@ -34,13 +34,12 @@ const INITIAL_VALUE = {
 };
 
 export default function UrlShortenerForm() {
+  const [parent] = useAutoAnimate();
+
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
-
   const [errorMessage, setErrorMessage] = useState("");
-
-  const [parent] = useAutoAnimate();
 
   const create = api.link.create.useMutation({
     onSuccess: (data) => {
@@ -55,9 +54,9 @@ export default function UrlShortenerForm() {
   });
 
   const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     setCode("");
     setLoading(true);
-    e.preventDefault();
     create.mutate({ limit: formData.limit, destinationUrl: formData.url });
   };
 
