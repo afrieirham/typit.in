@@ -139,4 +139,51 @@ export const linkRouter = createTRPCRouter({
 
       return link.code;
     }),
+  createFileLink: publicProcedure
+    .input(
+      z.object({
+        limit: z.string(),
+        fileUrl: z.string().url(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      // create unique code
+      let code = "";
+      while (true) {
+        code = generate({
+          minLength: 3,
+          maxLength: 10,
+          exactly: 1,
+          join: "",
+        });
+
+        const link = await ctx.db.link.findFirst({ where: { code } });
+        if (!link && code !== "notes" && code !== "files" && code !== "links") {
+          break;
+        }
+      }
+
+      // limit type
+      const [type, value] = input.limit.split("-");
+
+      const expiredIn = type === "visit" ? Number(value) : null;
+      const now = new Date();
+      const expiredAt =
+        type === "duration"
+          ? new Date(now.getTime() + Number(value) * 60000).toISOString()
+          : null;
+
+      const link = await ctx.db.link.create({
+        data: {
+          code: code,
+          expiredAt,
+          expiredIn,
+          fileUrl: input.fileUrl,
+        },
+      });
+
+      await ctx.db.createdLinkLog.create({ data: { type: "file" } });
+
+      return link.code;
+    }),
 });
