@@ -1,9 +1,41 @@
-import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { generate } from "random-words";
+import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
 export const linkRouter = createTRPCRouter({
+  getLinkInfo: publicProcedure
+    .input(z.object({ code: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
+
+      if (!link) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
+      }
+
+      if (
+        new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0 ||
+        link?.expiredIn === 0
+      ) {
+        await ctx.db.link.delete({ where: { code: input.code } });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Link expired" });
+      }
+
+      // decrement visit
+      if (Number(link?.expiredIn) > 0) {
+        await ctx.db.link.update({
+          where: { code: input.code },
+          data: { expiredIn: link?.expiredIn ? link.expiredIn - 1 : null },
+        });
+      }
+
+      return {
+        destinationUrl: link?.destinationUrl,
+        fileUrl: link?.fileUrl,
+        content: link?.content,
+      };
+    }),
   getLinksAnalytics: publicProcedure.query(async ({ ctx }) => {
     const url = await ctx.db.createdLinkLog.count({ where: { type: "url" } });
     const file = await ctx.db.createdLinkLog.count({ where: { type: "file" } });
@@ -32,7 +64,7 @@ export const linkRouter = createTRPCRouter({
         });
 
         const link = await ctx.db.link.findFirst({ where: { code } });
-        if (!link) {
+        if (!link && code !== "notes" && code !== "files" && code !== "links") {
           break;
         }
       }
@@ -60,7 +92,6 @@ export const linkRouter = createTRPCRouter({
 
       return link.code;
     }),
-
   createNotesLink: publicProcedure
     .input(
       z.object({
@@ -80,7 +111,7 @@ export const linkRouter = createTRPCRouter({
         });
 
         const link = await ctx.db.link.findFirst({ where: { code } });
-        if (!link) {
+        if (!link && code !== "notes" && code !== "files" && code !== "links") {
           break;
         }
       }
