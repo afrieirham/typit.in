@@ -18,9 +18,7 @@ import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -31,7 +29,7 @@ import LinkDisplay from "./link-display";
 
 const INITIAL_VALUE = {
   content: "",
-  limit: "duration-5",
+  duration: "5",
 };
 
 function TextSharingForm() {
@@ -58,7 +56,10 @@ function TextSharingForm() {
     e.preventDefault();
     setCode("");
     setLoading(true);
-    create.mutate({ limit: formData.limit, content: formData.content });
+    create.mutate({
+      duration: Number(formData.duration),
+      content: formData.content,
+    });
   };
 
   const handleChange = (
@@ -84,31 +85,22 @@ function TextSharingForm() {
         </div>
         <div className="">
           <Select
-            name="limit"
-            value={formData.limit}
+            name="duration"
+            value={formData.duration}
             onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, limit: value }))
+              setFormData((prev) => ({ ...prev, duration: value }))
             }
           >
             <SelectTrigger className="h-10 w-full">
               <SelectValue placeholder="select expiry method" />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                <SelectLabel>by duration</SelectLabel>
-                <SelectItem value="duration-5">5 minutes</SelectItem>
-                <SelectItem value="duration-30">30 minutes</SelectItem>
-                <SelectItem value="duration-60">1 hour</SelectItem>
-                <SelectItem value="duration-360">6 hours</SelectItem>
-                <SelectItem value="duration-720">12 hours</SelectItem>
-                <SelectItem value="duration-1440">24 hours</SelectItem>
-                <SelectLabel>by visits</SelectLabel>
-                <SelectItem value="visit-1">1 visit</SelectItem>
-                <SelectItem value="visit-5">5 visits</SelectItem>
-                <SelectItem value="visit-10">10 visits</SelectItem>
-                <SelectItem value="visit-50">50 visits</SelectItem>
-                <SelectItem value="visit-100">100 visits</SelectItem>
-              </SelectGroup>
+              <SelectItem value="5">5 minutes</SelectItem>
+              <SelectItem value="30">30 minutes</SelectItem>
+              <SelectItem value="60">1 hour</SelectItem>
+              <SelectItem value="360">6 hours</SelectItem>
+              <SelectItem value="720">12 hours</SelectItem>
+              <SelectItem value="1440">24 hours</SelectItem>
             </SelectContent>
           </Select>
         </div>

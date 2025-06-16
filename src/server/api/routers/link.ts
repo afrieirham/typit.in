@@ -14,20 +14,9 @@ export const linkRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
       }
 
-      if (
-        new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0 ||
-        link?.expiredIn === 0
-      ) {
+      if (new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0) {
         await ctx.db.link.delete({ where: { code: input.code } });
         throw new TRPCError({ code: "BAD_REQUEST", message: "Link expired" });
-      }
-
-      // decrement visit
-      if (Number(link?.expiredIn) > 0) {
-        await ctx.db.link.update({
-          where: { code: input.code },
-          data: { expiredIn: link?.expiredIn ? link.expiredIn - 1 : null },
-        });
       }
 
       return {
@@ -48,7 +37,7 @@ export const linkRouter = createTRPCRouter({
   createShortLink: publicProcedure
     .input(
       z.object({
-        limit: z.string(),
+        duration: z.number(),
         destinationUrl: z.string().url(),
       }),
     )
@@ -69,21 +58,15 @@ export const linkRouter = createTRPCRouter({
         }
       }
 
-      // limit type
-      const [type, value] = input.limit.split("-");
-
-      const expiredIn = type === "visit" ? Number(value) : null;
       const now = new Date();
-      const expiredAt =
-        type === "duration"
-          ? new Date(now.getTime() + Number(value) * 60000).toISOString()
-          : null;
+      const expiredAt = new Date(
+        now.getTime() + input.duration * 60000,
+      ).toISOString();
 
       const link = await ctx.db.link.create({
         data: {
           code: code,
           expiredAt,
-          expiredIn,
           destinationUrl: input.destinationUrl,
         },
       });
@@ -95,7 +78,7 @@ export const linkRouter = createTRPCRouter({
   createNotesLink: publicProcedure
     .input(
       z.object({
-        limit: z.string(),
+        duration: z.number(),
         content: z.string(),
       }),
     )
@@ -116,21 +99,15 @@ export const linkRouter = createTRPCRouter({
         }
       }
 
-      // limit type
-      const [type, value] = input.limit.split("-");
-
-      const expiredIn = type === "visit" ? Number(value) : null;
       const now = new Date();
-      const expiredAt =
-        type === "duration"
-          ? new Date(now.getTime() + Number(value) * 60000).toISOString()
-          : null;
+      const expiredAt = new Date(
+        now.getTime() + input.duration * 60000,
+      ).toISOString();
 
       const link = await ctx.db.link.create({
         data: {
           code: code,
           expiredAt,
-          expiredIn,
           content: input.content,
         },
       });
@@ -142,7 +119,7 @@ export const linkRouter = createTRPCRouter({
   createFileLink: publicProcedure
     .input(
       z.object({
-        limit: z.string(),
+        duration: z.number(),
         fileUrl: z.string().url(),
       }),
     )
@@ -163,21 +140,15 @@ export const linkRouter = createTRPCRouter({
         }
       }
 
-      // limit type
-      const [type, value] = input.limit.split("-");
-
-      const expiredIn = type === "visit" ? Number(value) : null;
       const now = new Date();
-      const expiredAt =
-        type === "duration"
-          ? new Date(now.getTime() + Number(value) * 60000).toISOString()
-          : null;
+      const expiredAt = new Date(
+        now.getTime() + input.duration * 60000,
+      ).toISOString();
 
       const link = await ctx.db.link.create({
         data: {
           code: code,
           expiredAt,
-          expiredIn,
           fileUrl: input.fileUrl,
         },
       });
