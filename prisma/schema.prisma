@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Link {
+    id             String   @id @default(cuid())
+    code           String   @unique
+    expiredAt      DateTime
+    password       String?
+    destinationUrl String?
+    fileName       String?
+    content        String?
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    @@index([code])
+}
+
+model CreatedLinkLog {
+    id        String   @id @default(cuid())
+    type      LinkType
+    createdAt DateTime @default(now())
+}
+
+enum LinkType {
+    url
+    file
+    note
+}
