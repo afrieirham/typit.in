@@ -117,7 +117,7 @@ export function FileStorageForm() {
           loading={isLoading}
           type="submit"
           className="h-10 w-full"
-          disabled={!selectedFile || isLoading}
+          disabled={isLoading}
         >
           Generate
         </Button>

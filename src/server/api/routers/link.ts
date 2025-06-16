@@ -88,7 +88,7 @@ export const linkRouter = createTRPCRouter({
     .input(
       z.object({
         duration: z.number(),
-        content: z.string(),
+        content: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
