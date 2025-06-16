@@ -7,16 +7,11 @@ import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { api } from "@/trpc/react";
-import LinkDisplay from "./link-display";
+
+import DurationDropdown from "./duration-dropdown";
 import ErrorDialog from "./error-dialog";
+import LinkDisplay from "./link-display";
 
 const INITIAL_VALUE = "5";
 
@@ -114,25 +109,11 @@ function FileStorageForm() {
             required
           />
         </div>
-        <div className="">
-          <Select
-            name="duration"
-            value={duration}
-            onValueChange={(value) => setDuration(value)}
-          >
-            <SelectTrigger className="h-10 w-full">
-              <SelectValue placeholder="select expiry method" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5 minutes</SelectItem>
-              <SelectItem value="30">30 minutes</SelectItem>
-              <SelectItem value="60">1 hour</SelectItem>
-              <SelectItem value="360">6 hours</SelectItem>
-              <SelectItem value="720">12 hours</SelectItem>
-              <SelectItem value="1440">24 hours</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <DurationDropdown
+          name="duration"
+          value={duration}
+          onValueChange={(value) => setDuration(value)}
+        />
         <Button
           loading={isLoading}
           type="submit"

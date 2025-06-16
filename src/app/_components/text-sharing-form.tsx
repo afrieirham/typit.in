@@ -4,18 +4,12 @@ import type React from "react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
-import LinkDisplay from "./link-display";
+import DurationDropdown from "./duration-dropdown";
 import ErrorDialog from "./error-dialog";
+import LinkDisplay from "./link-display";
 
 const INITIAL_VALUE = {
   content: "",
@@ -71,27 +65,13 @@ function TextSharingForm() {
             required
           />
         </div>
-        <div className="">
-          <Select
-            name="duration"
-            value={formData.duration}
-            onValueChange={(value) =>
-              setFormData((prev) => ({ ...prev, duration: value }))
-            }
-          >
-            <SelectTrigger className="h-10 w-full">
-              <SelectValue placeholder="select expiry method" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">5 minutes</SelectItem>
-              <SelectItem value="30">30 minutes</SelectItem>
-              <SelectItem value="60">1 hour</SelectItem>
-              <SelectItem value="360">6 hours</SelectItem>
-              <SelectItem value="720">12 hours</SelectItem>
-              <SelectItem value="1440">24 hours</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <DurationDropdown
+          name="duration"
+          value={formData.duration}
+          onValueChange={(value) =>
+            setFormData((prev) => ({ ...prev, duration: value }))
+          }
+        />
         <Button
           loading={loading}
           disabled={loading}
