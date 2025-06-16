@@ -94,7 +94,7 @@ export const linkRouter = createTRPCRouter({
     await deleteExpiredFiles(ctx.db, now);
     await ctx.db.link.deleteMany({ where: { expiredAt: { lt: now } } });
 
-    return { url: url + 7841, file: file + 246, note, active };
+    return { url: url + 7889, file: file + 252, note, active };
   }),
   createShortLink: publicProcedure
     .input(
