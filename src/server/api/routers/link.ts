@@ -3,6 +3,33 @@ import { generate } from "random-words";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import type { PrismaClient } from "@prisma/client";
+
+const getUniqueCode = async (db: PrismaClient) => {
+  let code = "";
+  while (true) {
+    code = generate({
+      minLength: 3,
+      maxLength: 10,
+      exactly: 1,
+      join: "",
+    });
+
+    const link = await db.link.findFirst({ where: { code } });
+    if (!link && code !== "notes" && code !== "files" && code !== "links") {
+      break;
+    }
+  }
+
+  return code;
+};
+
+const getExpiredAtDateTime = (duration: number) => {
+  const now = new Date();
+  const expiredAt = new Date(now.getTime() + duration * 60000).toISOString();
+
+  return expiredAt;
+};
 
 export const linkRouter = createTRPCRouter({
   getLinkInfo: publicProcedure
@@ -42,30 +69,12 @@ export const linkRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // create unique code
-      let code = "";
-      while (true) {
-        code = generate({
-          minLength: 3,
-          maxLength: 10,
-          exactly: 1,
-          join: "",
-        });
+      const code = await getUniqueCode(ctx.db);
+      const expiredAt = getExpiredAtDateTime(input.duration);
 
-        const link = await ctx.db.link.findFirst({ where: { code } });
-        if (!link && code !== "notes" && code !== "files" && code !== "links") {
-          break;
-        }
-      }
-
-      const now = new Date();
-      const expiredAt = new Date(
-        now.getTime() + input.duration * 60000,
-      ).toISOString();
-
-      const link = await ctx.db.link.create({
+      await ctx.db.link.create({
         data: {
-          code: code,
+          code,
           expiredAt,
           destinationUrl: input.destinationUrl,
         },
@@ -73,7 +82,7 @@ export const linkRouter = createTRPCRouter({
 
       await ctx.db.createdLinkLog.create({ data: { type: "url" } });
 
-      return link.code;
+      return code;
     }),
   createNotesLink: publicProcedure
     .input(
@@ -83,30 +92,12 @@ export const linkRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // create unique code
-      let code = "";
-      while (true) {
-        code = generate({
-          minLength: 3,
-          maxLength: 10,
-          exactly: 1,
-          join: "",
-        });
+      const code = await getUniqueCode(ctx.db);
+      const expiredAt = getExpiredAtDateTime(input.duration);
 
-        const link = await ctx.db.link.findFirst({ where: { code } });
-        if (!link && code !== "notes" && code !== "files" && code !== "links") {
-          break;
-        }
-      }
-
-      const now = new Date();
-      const expiredAt = new Date(
-        now.getTime() + input.duration * 60000,
-      ).toISOString();
-
-      const link = await ctx.db.link.create({
+      await ctx.db.link.create({
         data: {
-          code: code,
+          code,
           expiredAt,
           content: input.content,
         },
@@ -114,7 +105,7 @@ export const linkRouter = createTRPCRouter({
 
       await ctx.db.createdLinkLog.create({ data: { type: "note" } });
 
-      return link.code;
+      return code;
     }),
   createFileLink: publicProcedure
     .input(
@@ -124,30 +115,12 @@ export const linkRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // create unique code
-      let code = "";
-      while (true) {
-        code = generate({
-          minLength: 3,
-          maxLength: 10,
-          exactly: 1,
-          join: "",
-        });
+      const code = await getUniqueCode(ctx.db);
+      const expiredAt = getExpiredAtDateTime(input.duration);
 
-        const link = await ctx.db.link.findFirst({ where: { code } });
-        if (!link && code !== "notes" && code !== "files" && code !== "links") {
-          break;
-        }
-      }
-
-      const now = new Date();
-      const expiredAt = new Date(
-        now.getTime() + input.duration * 60000,
-      ).toISOString();
-
-      const link = await ctx.db.link.create({
+      await ctx.db.link.create({
         data: {
-          code: code,
+          code,
           expiredAt,
           fileUrl: input.fileUrl,
         },
@@ -155,6 +128,6 @@ export const linkRouter = createTRPCRouter({
 
       await ctx.db.createdLinkLog.create({ data: { type: "file" } });
 
-      return link.code;
+      return code;
     }),
 });
