@@ -1,15 +1,16 @@
 "use client";
 
-import { ClipboardPenLine, CloudUpload, Link } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
+import { ClipboardPenLine, CloudUpload, Link } from "lucide-react";
 
-import FileStorageForm from "../app/_components/file-storage-form";
-import TextSharingForm from "../app/_components/text-sharing-form";
-import UrlShortenerForm from "../app/_components/url-shortener-form";
-import { Pulse } from "./ui/pulse";
+import { Button } from "@/components/ui/button";
+import { Pulse } from "@/components/ui/pulse";
+
+import FileStorageForm from "./file-storage-form";
+import TextSharingForm from "./text-sharing-form";
+import UrlShortenerForm from "./url-shortener-form";
 
 type FormType = "url" | "file" | "text";
 const title = {
