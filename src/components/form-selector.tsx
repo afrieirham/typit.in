@@ -32,7 +32,7 @@ export function FormSelector({ initial = "url" }: { initial: FormType }) {
         <div className="mb-6 flex justify-center gap-4 rounded-lg bg-gray-50 p-3">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <div className="relative">
-              <Pulse active />
+              <Pulse active={!!analytics.data?.active} />
             </div>
             <span className="font-medium">{analytics.data?.active}</span>
             <span>active links</span>
