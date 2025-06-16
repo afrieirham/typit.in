@@ -3,7 +3,6 @@
 import type React from "react";
 import { useRef, useState } from "react";
 
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import axios from "axios";
 
 import {
@@ -30,7 +29,6 @@ import LinkDisplay from "./link-display";
 const INITIAL_VALUE = "5";
 
 function FileStorageForm() {
-  const [parent] = useAutoAnimate();
   const inputFile = useRef<HTMLInputElement>(null);
 
   const [duration, setDuration] = useState(INITIAL_VALUE);
@@ -153,9 +151,9 @@ function FileStorageForm() {
         </Button>
       </form>
       <p className="text-xs text-gray-500">{uploadStatus}</p>
-      <div ref={parent}>
-        <LinkDisplay code={code} />
-      </div>
+
+      <LinkDisplay code={code} />
+
       <AlertDialog open={!!errorMessage}>
         <AlertDialogContent>
           <AlertDialogHeader>

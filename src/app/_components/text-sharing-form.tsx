@@ -3,8 +3,6 @@
 import type React from "react";
 import { useState } from "react";
 
-import { useAutoAnimate } from "@formkit/auto-animate/react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,8 +31,6 @@ const INITIAL_VALUE = {
 };
 
 function TextSharingForm() {
-  const [parent] = useAutoAnimate();
-
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -113,9 +109,9 @@ function TextSharingForm() {
           Generate
         </Button>
       </form>
-      <div ref={parent}>
-        <LinkDisplay code={code} />
-      </div>
+
+      <LinkDisplay code={code} />
+
       <AlertDialog open={!!errorMessage}>
         <AlertDialogContent>
           <AlertDialogHeader>
