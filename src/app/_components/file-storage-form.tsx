@@ -5,15 +5,6 @@ import { useRef, useState } from "react";
 
 import axios from "axios";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/trpc/react";
 import LinkDisplay from "./link-display";
+import ErrorDialog from "./error-dialog";
 
 const INITIAL_VALUE = "5";
 
@@ -154,21 +146,10 @@ function FileStorageForm() {
 
       <LinkDisplay code={code} />
 
-      <AlertDialog open={!!errorMessage}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Opps, sorry!</AlertDialogTitle>
-            <AlertDialogDescription>
-              {errorMessage || "Something went wrong."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setErrorMessage("")}>
-              Okay
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ErrorDialog
+        errorMessage={errorMessage}
+        onClickAction={() => setErrorMessage("")}
+      />
     </div>
   );
 }

@@ -3,15 +3,6 @@
 import type React from "react";
 import { useState } from "react";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
 import LinkDisplay from "./link-display";
+import ErrorDialog from "./error-dialog";
 
 const INITIAL_VALUE = {
   content: "",
@@ -112,21 +104,10 @@ function TextSharingForm() {
 
       <LinkDisplay code={code} />
 
-      <AlertDialog open={!!errorMessage}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Opps, sorry!</AlertDialogTitle>
-            <AlertDialogDescription>
-              {errorMessage || "Something went wrong."}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setErrorMessage("")}>
-              Okay
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ErrorDialog
+        errorMessage={errorMessage}
+        onClickAction={() => setErrorMessage("")}
+      />
     </div>
   );
 }
