@@ -8,7 +8,7 @@ import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function ReadOnlyTextDisplay({ content }: { content: string }) {
+export function NoteDisplay({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {

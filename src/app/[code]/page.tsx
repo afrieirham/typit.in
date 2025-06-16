@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import React from "react";
 
 import { api } from "@/trpc/server";
-import NotesDisplay from "./_components/notes-display";
+import { NoteDisplay } from "./_components/note-display";
+import { FileDisplay } from "./_components/file-display";
 
 async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
@@ -16,11 +17,11 @@ async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
   }
 
   if (fileUrl) {
-    redirect(fileUrl);
+    return <FileDisplay fileUrl={fileUrl} />;
   }
 
   if (content) {
-    return <NotesDisplay content={content} />;
+    return <NoteDisplay content={content} />;
   }
 
   return null;
