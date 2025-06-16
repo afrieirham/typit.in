@@ -16,7 +16,7 @@ model Link {
     expiredAt      DateTime
     password       String?
     destinationUrl String?
-    fileUrl        String?
+    fileName       String?
     content        String?
     createdAt      DateTime @default(now())
     updatedAt      DateTime @updatedAt

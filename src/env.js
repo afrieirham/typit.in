@@ -24,7 +24,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_CLIENTVAR: z.string(),
+    NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN: z.string().url(),
   },
 
   /**
@@ -40,6 +40,8 @@ export const env = createEnv({
       process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
     CLOUDFLARE_R2_BUCKET_NAME: process.env.CLOUDFLARE_R2_BUCKET_NAME,
     CLOUDFLARE_R2_PUBLIC_DOMAIN: process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN,
+    NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN:
+      process.env.CLOUDFLARE_R2_PUBLIC_DOMAIN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

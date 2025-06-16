@@ -4,9 +4,9 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { env } from "@/env";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 
-const r2Client = new S3Client({
+export const r2Client = new S3Client({
   region: "auto", // R2 doesn't use AWS regions in the same way, "auto" often works.
   endpoint: `https://${env.CLOUDFLARE_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
   credentials: {

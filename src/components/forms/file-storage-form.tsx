@@ -57,7 +57,7 @@ export function FileStorageForm() {
 
         createFileLink.mutate({
           duration: Number(duration),
-          fileUrl: data.publicFileUrl,
+          fileName: data.fileName,
         });
       } catch (error) {
         console.error("Error during direct upload to R2:", error);

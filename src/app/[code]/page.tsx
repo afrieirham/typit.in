@@ -8,7 +8,7 @@ import { FileDisplay } from "./_components/file-display";
 async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
 
-  const { destinationUrl, fileUrl, content } = await api.link.getLinkInfo({
+  const { destinationUrl, fileName, content } = await api.link.getLinkInfo({
     code,
   });
 
@@ -16,8 +16,8 @@ async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
     redirect(destinationUrl);
   }
 
-  if (fileUrl) {
-    return <FileDisplay fileUrl={fileUrl} />;
+  if (fileName) {
+    return <FileDisplay fileName={fileName} />;
   }
 
   if (content) {
