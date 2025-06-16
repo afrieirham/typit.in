@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import FormSelector from "@/app/_components/form-selector";
+import { FormSelector } from "@/components/form-selector";
 
 export const metadata: Metadata = {
   title: "typit.in - short and catchy temporary url to share notes",

@@ -10,7 +10,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-function ErrorDialog({
+export function ErrorDialog({
   errorMessage,
   onClickAction,
 }: {
@@ -33,5 +33,3 @@ function ErrorDialog({
     </AlertDialog>
   );
 }
-
-export default ErrorDialog;

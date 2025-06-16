@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 
-import { api } from "@/trpc/react";
 import { ClipboardPenLine, CloudUpload, Link } from "lucide-react";
 
+import { FileStorageForm } from "@/components/forms/file-storage-form";
+import { TextSharingForm } from "@/components/forms/text-sharing-form";
+import { UrlShortenerForm } from "@/components/forms/url-shortener-form";
 import { Button } from "@/components/ui/button";
 import { Pulse } from "@/components/ui/pulse";
-
-import FileStorageForm from "./file-storage-form";
-import TextSharingForm from "./text-sharing-form";
-import UrlShortenerForm from "./url-shortener-form";
+import { api } from "@/trpc/react";
 
 type FormType = "url" | "file" | "text";
 const title = {
@@ -19,7 +18,7 @@ const title = {
   text: "notes",
 };
 
-function FormSelector({ initial = "url" }: { initial: FormType }) {
+export function FormSelector({ initial = "url" }: { initial: FormType }) {
   const [selectedForm, setSelectedForm] = useState<FormType>(initial);
   const analytics = api.link.getLinksAnalytics.useQuery();
 
@@ -93,5 +92,3 @@ function FormSelector({ initial = "url" }: { initial: FormType }) {
     </div>
   );
 }
-
-export default FormSelector;

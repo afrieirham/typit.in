@@ -5,17 +5,16 @@ import { useRef, useState } from "react";
 
 import axios from "axios";
 
+import { DurationDropdown } from "@/components/duration-dropdown";
+import { ErrorDialog } from "@/components/error-dialog";
+import { LinkDisplay } from "@/components/link-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 
-import DurationDropdown from "./duration-dropdown";
-import ErrorDialog from "./error-dialog";
-import LinkDisplay from "./link-display";
-
 const INITIAL_VALUE = "5";
 
-function FileStorageForm() {
+export function FileStorageForm() {
   const inputFile = useRef<HTMLInputElement>(null);
 
   const [duration, setDuration] = useState(INITIAL_VALUE);
@@ -134,5 +133,3 @@ function FileStorageForm() {
     </div>
   );
 }
-
-export default FileStorageForm;

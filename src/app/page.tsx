@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import FormSelector from "./_components/form-selector";
+import { FormSelector } from "@/components/form-selector";
 
 export const metadata: Metadata = {
   title: "typit.in - catchiest temporary url shortener",

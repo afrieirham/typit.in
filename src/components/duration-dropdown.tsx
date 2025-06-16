@@ -1,5 +1,7 @@
 import React from "react";
 
+import type { SelectProps } from "@radix-ui/react-select";
+
 import {
   Select,
   SelectContent,
@@ -7,9 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { SelectProps } from "@radix-ui/react-select";
 
-function DurationDropdown(props: React.ComponentProps<React.FC<SelectProps>>) {
+export function DurationDropdown(
+  props: React.ComponentProps<React.FC<SelectProps>>,
+) {
   return (
     <Select {...props}>
       <SelectTrigger className="h-10 w-full">
@@ -26,5 +29,3 @@ function DurationDropdown(props: React.ComponentProps<React.FC<SelectProps>>) {
     </Select>
   );
 }
-
-export default DurationDropdown;

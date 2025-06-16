@@ -7,7 +7,7 @@ import { Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useHostName } from "@/hooks/useHostName";
 
-function LinkDisplay({ code }: { code?: string }) {
+export function LinkDisplay({ code }: { code?: string }) {
   const hostname = useHostName();
   const [parent] = useAutoAnimate();
 
@@ -51,5 +51,3 @@ function LinkDisplay({ code }: { code?: string }) {
     </div>
   );
 }
-
-export default LinkDisplay;

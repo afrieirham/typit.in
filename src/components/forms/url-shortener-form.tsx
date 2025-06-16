@@ -3,26 +3,25 @@
 import type React from "react";
 import { useState } from "react";
 
+import { DurationDropdown } from "@/components/duration-dropdown";
+import { ErrorDialog } from "@/components/error-dialog";
+import { LinkDisplay } from "@/components/link-display";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 
-import DurationDropdown from "./duration-dropdown";
-import ErrorDialog from "./error-dialog";
-import LinkDisplay from "./link-display";
-
 const INITIAL_VALUE = {
-  content: "",
+  url: "",
   duration: "5",
 };
 
-function TextSharingForm() {
+export function UrlShortenerForm() {
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const create = api.link.createNotesLink.useMutation({
+  const create = api.link.createShortLink.useMutation({
     onSuccess: (data) => {
       setCode(data);
       setFormData(INITIAL_VALUE);
@@ -40,7 +39,7 @@ function TextSharingForm() {
     setLoading(true);
     create.mutate({
       duration: Number(formData.duration),
-      content: formData.content,
+      destinationUrl: formData.url,
     });
   };
 
@@ -55,13 +54,14 @@ function TextSharingForm() {
     <div>
       <form onSubmit={handleSubmit} className="space-y-2">
         <div className="">
-          <Textarea
-            id="content"
-            name="content"
-            value={formData.content}
+          <Input
+            id="url"
+            name="url"
+            value={formData.url}
             onChange={handleChange}
-            placeholder="type your notes here..."
-            className="min-h-44 text-sm normal-case"
+            placeholder="https://youtu.be/dQw4w9WgXcQ"
+            className="h-10 text-sm normal-case"
+            type="url"
             required
           />
         </div>
@@ -83,7 +83,6 @@ function TextSharingForm() {
       </form>
 
       <LinkDisplay code={code} />
-
       <ErrorDialog
         errorMessage={errorMessage}
         onClickAction={() => setErrorMessage("")}
@@ -91,5 +90,3 @@ function TextSharingForm() {
     </div>
   );
 }
-
-export default TextSharingForm;

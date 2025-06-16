@@ -3,26 +3,25 @@
 import type React from "react";
 import { useState } from "react";
 
+import { DurationDropdown } from "@/components/duration-dropdown";
+import { ErrorDialog } from "@/components/error-dialog";
+import { LinkDisplay } from "@/components/link-display";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/trpc/react";
 
-import DurationDropdown from "./duration-dropdown";
-import ErrorDialog from "./error-dialog";
-import LinkDisplay from "./link-display";
-
 const INITIAL_VALUE = {
-  url: "",
+  content: "",
   duration: "5",
 };
 
-export default function UrlShortenerForm() {
+export function TextSharingForm() {
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const create = api.link.createShortLink.useMutation({
+  const create = api.link.createNotesLink.useMutation({
     onSuccess: (data) => {
       setCode(data);
       setFormData(INITIAL_VALUE);
@@ -40,7 +39,7 @@ export default function UrlShortenerForm() {
     setLoading(true);
     create.mutate({
       duration: Number(formData.duration),
-      destinationUrl: formData.url,
+      content: formData.content,
     });
   };
 
@@ -55,14 +54,13 @@ export default function UrlShortenerForm() {
     <div>
       <form onSubmit={handleSubmit} className="space-y-2">
         <div className="">
-          <Input
-            id="url"
-            name="url"
-            value={formData.url}
+          <Textarea
+            id="content"
+            name="content"
+            value={formData.content}
             onChange={handleChange}
-            placeholder="https://youtu.be/dQw4w9WgXcQ"
-            className="h-10 text-sm normal-case"
-            type="url"
+            placeholder="type your notes here..."
+            className="min-h-44 text-sm normal-case"
             required
           />
         </div>
@@ -84,6 +82,7 @@ export default function UrlShortenerForm() {
       </form>
 
       <LinkDisplay code={code} />
+
       <ErrorDialog
         errorMessage={errorMessage}
         onClickAction={() => setErrorMessage("")}
