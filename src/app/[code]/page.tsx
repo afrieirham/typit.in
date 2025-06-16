@@ -15,6 +15,10 @@ async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
     redirect(destinationUrl);
   }
 
+  if (fileUrl) {
+    redirect(fileUrl);
+  }
+
   if (content) {
     return <NotesDisplay content={content} />;
   }
