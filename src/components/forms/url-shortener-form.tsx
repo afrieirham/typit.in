@@ -16,6 +16,8 @@ const INITIAL_VALUE = {
 };
 
 export function UrlShortenerForm() {
+  const trpcContext = api.useUtils();
+
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,6 +28,7 @@ export function UrlShortenerForm() {
       setCode(data);
       setFormData(INITIAL_VALUE);
       setLoading(false);
+      void trpcContext.link.getLinksAnalytics.invalidate();
     },
     onError: (error) => {
       setLoading(false);

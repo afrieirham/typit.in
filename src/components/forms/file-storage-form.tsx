@@ -16,6 +16,7 @@ const INITIAL_VALUE = "5";
 
 export function FileStorageForm() {
   const inputFile = useRef<HTMLInputElement>(null);
+  const trpcContext = api.useUtils();
 
   const [duration, setDuration] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
@@ -28,6 +29,7 @@ export function FileStorageForm() {
     onSuccess: (data) => {
       setCode(data);
       setDuration(INITIAL_VALUE);
+      void trpcContext.link.getLinksAnalytics.invalidate();
     },
     onError: (error) => {
       setErrorMessage(error.message || "An unexpected error occurred.");
