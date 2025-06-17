@@ -4,12 +4,14 @@ import type React from "react";
 import { useRef, useState } from "react";
 
 import axios from "axios";
+import Turnstile from "react-turnstile";
 
 import { DurationDropdown } from "@/components/duration-dropdown";
 import { ErrorDialog } from "@/components/error-dialog";
 import { LinkDisplay } from "@/components/link-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { env } from "@/env";
 import { api } from "@/trpc/react";
 
 const INITIAL_VALUE = "5";
@@ -20,6 +22,8 @@ export function FileStorageForm() {
 
   const [duration, setDuration] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
+  const [cfToken, setCfToken] = useState("");
+
   const [errorMessage, setErrorMessage] = useState("");
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -60,6 +64,7 @@ export function FileStorageForm() {
         createFileLink.mutate({
           duration: Number(duration),
           fileName: data.fileName,
+          cfToken,
         });
       } catch (error) {
         console.error("Error during direct upload to R2:", error);
@@ -115,6 +120,14 @@ export function FileStorageForm() {
           value={duration}
           onValueChange={(value) => setDuration(value)}
         />
+
+        <Turnstile
+          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+          onVerify={(token) => setCfToken(token)}
+          onExpire={() => setCfToken("")}
+          onError={() => setCfToken("")}
+        />
+
         <Button
           loading={isLoading}
           type="submit"

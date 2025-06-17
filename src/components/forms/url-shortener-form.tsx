@@ -3,11 +3,14 @@
 import type React from "react";
 import { useState } from "react";
 
+import Turnstile from "react-turnstile";
+
 import { DurationDropdown } from "@/components/duration-dropdown";
 import { ErrorDialog } from "@/components/error-dialog";
 import { LinkDisplay } from "@/components/link-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { env } from "@/env";
 import { api } from "@/trpc/react";
 
 const INITIAL_VALUE = {
@@ -20,6 +23,8 @@ export function UrlShortenerForm() {
 
   const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
+  const [cfToken, setCfToken] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -43,6 +48,7 @@ export function UrlShortenerForm() {
     create.mutate({
       duration: Number(formData.duration),
       destinationUrl: formData.url,
+      cfToken,
     });
   };
 
@@ -75,6 +81,14 @@ export function UrlShortenerForm() {
             setFormData((prev) => ({ ...prev, duration: value }))
           }
         />
+
+        <Turnstile
+          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+          onVerify={(token) => setCfToken(token)}
+          onExpire={() => setCfToken("")}
+          onError={() => setCfToken("")}
+        />
+
         <Button
           loading={loading}
           disabled={loading}

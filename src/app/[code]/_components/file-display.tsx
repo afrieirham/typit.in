@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { env } from "@/env";
 
 export function FileDisplay({ fileName }: { fileName: string }) {
-  const fileUrl = `${env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN}/uploads/${fileName}`;
+  const fileUrl = `${env.CLOUDFLARE_R2_PUBLIC_DOMAIN}/uploads/${fileName}`;
+
   return (
     <div className="my-8 p-2">
       <div className="mx-auto max-w-3xl space-y-6">

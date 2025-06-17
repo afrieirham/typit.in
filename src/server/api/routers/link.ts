@@ -1,12 +1,14 @@
 import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import axios from "axios";
 import { generate } from "random-words";
 import { z } from "zod";
 
 import { env } from "@/env";
 import { r2Client } from "@/server/api/routers/r2";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import type { PrismaClient } from "@prisma/client";
+import type { TurnstileAxiosResponse } from "@/types";
 
 const getUniqueCode = async (db: PrismaClient) => {
   let code = "";
@@ -63,6 +65,32 @@ const deleteExpiredFiles = async (db: PrismaClient, now: Date) => {
   }
 };
 
+const verifyCfToken = async (token: string) => {
+  if (!token) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "missing cf token",
+    });
+  }
+
+  const verificationParams = new URLSearchParams();
+  verificationParams.append("secret", env.CLOUDFLARE_TURNSTILE_SECRET_KEY);
+  verificationParams.append("response", token);
+
+  const turnstileResponse: TurnstileAxiosResponse = await axios.post(
+    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+    verificationParams.toString(),
+    { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
+  );
+
+  if (!turnstileResponse.data.success) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "verification failed",
+    });
+  }
+};
+
 export const linkRouter = createTRPCRouter({
   getLinkInfo: publicProcedure
     .input(z.object({ code: z.string() }))
@@ -101,9 +129,11 @@ export const linkRouter = createTRPCRouter({
       z.object({
         duration: z.number(),
         destinationUrl: z.string().url(),
+        cfToken: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
 
@@ -124,9 +154,11 @@ export const linkRouter = createTRPCRouter({
       z.object({
         duration: z.number(),
         content: z.string().min(1),
+        cfToken: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
 
@@ -147,9 +179,11 @@ export const linkRouter = createTRPCRouter({
       z.object({
         duration: z.number(),
         fileName: z.string(),
+        cfToken: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
 
