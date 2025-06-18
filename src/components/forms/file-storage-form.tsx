@@ -14,13 +14,16 @@ import { Input } from "@/components/ui/input";
 import { env } from "@/env";
 import { api } from "@/trpc/react";
 
-const INITIAL_VALUE = "5";
+const INITIAL_VALUE = {
+  duration: "5",
+  password: "",
+};
 
 export function FileStorageForm() {
   const inputFile = useRef<HTMLInputElement>(null);
   const trpcContext = api.useUtils();
 
-  const [duration, setDuration] = useState(INITIAL_VALUE);
+  const [formData, setFormData] = useState(INITIAL_VALUE);
   const [code, setCode] = useState("");
   const [cfToken, setCfToken] = useState("");
 
@@ -32,7 +35,7 @@ export function FileStorageForm() {
   const createFileLink = api.link.createFileLink.useMutation({
     onSuccess: (data) => {
       setCode(data);
-      setDuration(INITIAL_VALUE);
+      setFormData(INITIAL_VALUE);
       void trpcContext.link.getLinksAnalytics.invalidate();
     },
     onError: (error) => {
@@ -62,8 +65,9 @@ export function FileStorageForm() {
         }
 
         createFileLink.mutate({
-          duration: Number(duration),
+          duration: Number(formData.duration),
           fileName: data.fileName,
+          password: formData.password,
           cfToken,
         });
       } catch (error) {
@@ -103,6 +107,13 @@ export function FileStorageForm() {
 
   const isLoading = getSignedUrlMutation.isPending;
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
     <div>
       <form onSubmit={handleUpload} className="space-y-2">
@@ -117,25 +128,36 @@ export function FileStorageForm() {
         </div>
         <DurationDropdown
           name="duration"
-          value={duration}
-          onValueChange={(value) => setDuration(value)}
+          value={formData.duration}
+          onValueChange={(value) =>
+            setFormData((prev) => ({ ...prev, duration: value }))
+          }
         />
+
+        <Input
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="password (leave blank if not needed)"
+        />
+
+        <Button
+          loading={isLoading}
+          type="submit"
+          className="mt-8 h-10 w-full"
+          disabled={isLoading}
+        >
+          Generate
+        </Button>
 
         <Turnstile
           sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
           onVerify={(token) => setCfToken(token)}
           onExpire={() => setCfToken("")}
           onError={() => setCfToken("")}
+          theme="light"
         />
-
-        <Button
-          loading={isLoading}
-          type="submit"
-          className="h-10 w-full"
-          disabled={isLoading}
-        >
-          Generate
-        </Button>
       </form>
       <p className="text-xs text-gray-500">{uploadStatus}</p>
 

@@ -22,9 +22,7 @@ export function ErrorDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Opps, sorry!</AlertDialogTitle>
-          <AlertDialogDescription>
-            {errorMessage || "Something went wrong."}
-          </AlertDialogDescription>
+          <AlertDialogDescription>{errorMessage}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction onClick={onClickAction}>Okay</AlertDialogAction>

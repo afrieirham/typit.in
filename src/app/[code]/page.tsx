@@ -1,30 +1,21 @@
-import { redirect } from "next/navigation";
 import React from "react";
 
 import { api } from "@/trpc/server";
-import { NoteDisplay } from "./_components/note-display";
-import { FileDisplay } from "./_components/file-display";
+import { PasswordForm } from "./_components/password-form";
+import { PasswordlessDisplay } from "./_components/passwordless-display";
 
-async function DisplayPage({ params }: { params: Promise<{ code: string }> }) {
-  const { code } = await params;
+type Params = Promise<{ code: string }>;
 
-  const { destinationUrl, fileName, content } = await api.link.getLinkInfo({
-    code,
-  });
+async function DisplayPage(props: { params: Params }) {
+  const { code } = await props.params;
 
-  if (destinationUrl) {
-    redirect(destinationUrl);
+  const requirePassword = await api.link.isRequirePassword({ code });
+
+  if (requirePassword) {
+    return <PasswordForm code={code} />;
   }
 
-  if (fileName) {
-    return <FileDisplay fileName={fileName} />;
-  }
-
-  if (content) {
-    return <NoteDisplay content={content} />;
-  }
-
-  return null;
+  return <PasswordlessDisplay code={code} />;
 }
 
 export default DisplayPage;

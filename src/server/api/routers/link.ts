@@ -2,6 +2,7 @@ import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
+import { compare, hash } from "bcrypt";
 import { generate } from "random-words";
 import { z } from "zod";
 
@@ -91,7 +92,28 @@ const verifyCfToken = async (token: string) => {
   }
 };
 
+const getHashPassword = async (password?: string) => {
+  let hashPassword = null;
+
+  if (password) {
+    hashPassword = await hash(password, Number(env.SALT));
+  }
+
+  return hashPassword;
+};
+
 export const linkRouter = createTRPCRouter({
+  isRequirePassword: publicProcedure
+    .input(z.object({ code: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
+
+      if (!link) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
+      }
+
+      return Boolean(link.password);
+    }),
   getLinkInfo: publicProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -99,6 +121,35 @@ export const linkRouter = createTRPCRouter({
 
       if (!link) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
+      }
+
+      if (new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0) {
+        await ctx.db.link.delete({ where: { code: input.code } });
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Link expired" });
+      }
+
+      return {
+        destinationUrl: link?.destinationUrl,
+        fileName: link?.fileName,
+        content: link?.content,
+      };
+    }),
+  getLinkInfoWithPassword: publicProcedure
+    .input(z.object({ code: z.string(), password: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
+
+      if (!link) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
+      }
+
+      const match = await compare(input.password, link.password ?? "");
+
+      if (!match) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Incorrect password",
+        });
       }
 
       if (new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0) {
@@ -130,18 +181,21 @@ export const linkRouter = createTRPCRouter({
         duration: z.number(),
         destinationUrl: z.string().url(),
         cfToken: z.string(),
+        password: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
+      const hashPassword = await getHashPassword(input.password);
 
       await ctx.db.link.create({
         data: {
           code,
           expiredAt,
           destinationUrl: input.destinationUrl,
+          password: hashPassword,
         },
       });
 
@@ -155,18 +209,21 @@ export const linkRouter = createTRPCRouter({
         duration: z.number(),
         content: z.string().min(1),
         cfToken: z.string(),
+        password: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
+      const hashPassword = await getHashPassword(input.password);
 
       await ctx.db.link.create({
         data: {
           code,
           expiredAt,
           content: input.content,
+          password: hashPassword,
         },
       });
 
@@ -180,18 +237,21 @@ export const linkRouter = createTRPCRouter({
         duration: z.number(),
         fileName: z.string(),
         cfToken: z.string(),
+        password: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       await verifyCfToken(input.cfToken);
       const code = await getUniqueCode(ctx.db);
       const expiredAt = getExpiredAtDateTime(input.duration);
+      const hashPassword = await getHashPassword(input.password);
 
       await ctx.db.link.create({
         data: {
           code,
           expiredAt,
           fileName: input.fileName,
+          password: hashPassword,
         },
       });
 

@@ -12,10 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { env } from "@/env";
 import { api } from "@/trpc/react";
+import { Input } from "@/components/ui/input";
 
 const INITIAL_VALUE = {
   content: "",
   duration: "5",
+  password: "",
 };
 
 export function TextSharingForm() {
@@ -48,6 +50,7 @@ export function TextSharingForm() {
     create.mutate({
       duration: Number(formData.duration),
       content: formData.content,
+      password: formData.password,
       cfToken,
     });
   };
@@ -81,21 +84,30 @@ export function TextSharingForm() {
           }
         />
 
-        <Turnstile
-          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
-          onVerify={(token) => setCfToken(token)}
-          onExpire={() => setCfToken("")}
-          onError={() => setCfToken("")}
+        <Input
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="password (leave blank if not needed)"
         />
 
         <Button
           loading={loading}
           disabled={loading}
           type="submit"
-          className="h-10 w-full"
+          className="mt-8 h-10 w-full"
         >
           Generate
         </Button>
+
+        <Turnstile
+          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+          onVerify={(token) => setCfToken(token)}
+          onExpire={() => setCfToken("")}
+          onError={() => setCfToken("")}
+          theme="light"
+        />
       </form>
 
       <LinkDisplay code={code} />

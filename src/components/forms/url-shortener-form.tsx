@@ -16,6 +16,7 @@ import { api } from "@/trpc/react";
 const INITIAL_VALUE = {
   url: "",
   duration: "5",
+  password: "",
 };
 
 export function UrlShortenerForm() {
@@ -48,6 +49,7 @@ export function UrlShortenerForm() {
     create.mutate({
       duration: Number(formData.duration),
       destinationUrl: formData.url,
+      password: formData.password,
       cfToken,
     });
   };
@@ -82,21 +84,30 @@ export function UrlShortenerForm() {
           }
         />
 
-        <Turnstile
-          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
-          onVerify={(token) => setCfToken(token)}
-          onExpire={() => setCfToken("")}
-          onError={() => setCfToken("")}
+        <Input
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="password (leave blank if not needed)"
         />
 
         <Button
           loading={loading}
           disabled={loading}
           type="submit"
-          className="h-10 w-full"
+          className="mt-8 h-10 w-full"
         >
           Generate
         </Button>
+
+        <Turnstile
+          sitekey={env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+          onVerify={(token) => setCfToken(token)}
+          onExpire={() => setCfToken("")}
+          onError={() => setCfToken("")}
+          theme="light"
+        />
       </form>
 
       <LinkDisplay code={code} />
