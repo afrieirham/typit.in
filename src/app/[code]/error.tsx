@@ -1,17 +1,12 @@
 "use client";
-
 import Link from "next/link";
 
-type Props = {
-  error: Error & { digest?: string };
-};
-
-export default function Error({ error }: Props) {
+export default function Error() {
   return (
     <main className="flex h-[100dvh] flex-col items-center justify-center">
       <h2 className="text-center text-2xl">404</h2>
       <p className="mt-4 flex gap-1">
-        <span>{error.message}.</span>
+        <span>link not found or expired.</span>
         <span>Go</span>
         <Link href="/">
           <span className="underline">back home</span>.

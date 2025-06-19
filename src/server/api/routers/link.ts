@@ -102,26 +102,27 @@ const getHashPassword = async (password?: string) => {
   return hashPassword;
 };
 
+const getLinkByCode = async (db: PrismaClient, code: string) => {
+  const link = await db.link.findFirst({ where: { code } });
+
+  if (!link) {
+    throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
+  }
+
+  return link;
+};
+
 export const linkRouter = createTRPCRouter({
   isRequirePassword: publicProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ ctx, input }) => {
-      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
-
-      if (!link) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
-      }
-
+      const link = await getLinkByCode(ctx.db, input.code);
       return Boolean(link.password);
     }),
   getLinkInfo: publicProcedure
     .input(z.object({ code: z.string() }))
     .query(async ({ ctx, input }) => {
-      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
-
-      if (!link) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
-      }
+      const link = await getLinkByCode(ctx.db, input.code);
 
       if (new Date().getTime() - Number(link?.expiredAt?.getTime()) > 0) {
         await ctx.db.link.delete({ where: { code: input.code } });
@@ -137,12 +138,7 @@ export const linkRouter = createTRPCRouter({
   getLinkInfoWithPassword: publicProcedure
     .input(z.object({ code: z.string(), password: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const link = await ctx.db.link.findFirst({ where: { code: input.code } });
-
-      if (!link) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found" });
-      }
-
+      const link = await getLinkByCode(ctx.db, input.code);
       const match = await compare(input.password, link.password ?? "");
 
       if (!match) {
