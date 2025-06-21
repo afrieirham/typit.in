@@ -11,15 +11,16 @@ datasource db {
 }
 
 model Link {
-    id             String   @id @default(cuid())
-    code           String   @unique
-    expiredAt      DateTime
-    password       String?
-    destinationUrl String?
-    fileName       String?
-    content        String?
-    createdAt      DateTime @default(now())
-    updatedAt      DateTime @updatedAt
+    id               String   @id @default(cuid())
+    code             String   @unique
+    expiredAt        DateTime
+    password         String?
+    destinationUrl   String?
+    fileName         String?
+    originalFileName String?
+    content          String?
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
 
     @@index([code])
 }

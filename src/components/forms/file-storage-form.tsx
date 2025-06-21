@@ -69,6 +69,7 @@ export function FileStorageForm() {
           fileName: data.fileName,
           password: formData.password,
           cfToken,
+          originalFileName: data.originalFileName,
         });
       } catch (error) {
         console.error("Error during direct upload to R2:", error);
@@ -100,7 +101,7 @@ export function FileStorageForm() {
     }
 
     await getSignedUrlMutation.mutateAsync({
-      fileName: `uploads/${selectedFile.name}`,
+      fileName: selectedFile.name,
       fileType: selectedFile.type,
     });
   };

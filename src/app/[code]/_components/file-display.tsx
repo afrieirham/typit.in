@@ -6,7 +6,13 @@ import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { env } from "@/env";
 
-export function FileDisplay({ fileName }: { fileName: string }) {
+export function FileDisplay({
+  fileName,
+  originalFileName,
+}: {
+  fileName: string;
+  originalFileName: string;
+}) {
   const fileUrl = `${env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_DOMAIN}/uploads/${fileName}`;
 
   return (
@@ -22,7 +28,7 @@ export function FileDisplay({ fileName }: { fileName: string }) {
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-end">
             <Button asChild size="sm" className="h-8">
-              <a href={fileUrl} download>
+              <a href={fileUrl} download={originalFileName}>
                 <Download />
                 <span>Download File</span>
               </a>

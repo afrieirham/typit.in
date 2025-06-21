@@ -49,6 +49,7 @@ export const r2Router = createTRPCRouter({
           fileName: safeFileName,
           fileType: input.fileType,
           publicFileUrl,
+          originalFileName: input.fileName,
         };
       } catch (error) {
         console.error("Error generating signed URL for R2:", error);

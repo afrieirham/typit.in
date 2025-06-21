@@ -131,8 +131,11 @@ export const linkRouter = createTRPCRouter({
 
       return {
         destinationUrl: link?.destinationUrl,
-        fileName: link?.fileName,
         content: link?.content,
+        file: {
+          fileName: link?.fileName,
+          originalFileName: link?.originalFileName,
+        },
       };
     }),
   getLinkInfoWithPassword: publicProcedure
@@ -155,8 +158,11 @@ export const linkRouter = createTRPCRouter({
 
       return {
         destinationUrl: link?.destinationUrl,
-        fileName: link?.fileName,
         content: link?.content,
+        file: {
+          fileName: link?.fileName,
+          originalFileName: link.originalFileName,
+        },
       };
     }),
   getLinksAnalytics: publicProcedure.query(async ({ ctx }) => {
@@ -234,6 +240,7 @@ export const linkRouter = createTRPCRouter({
         fileName: z.string(),
         cfToken: z.string(),
         password: z.string().optional(),
+        originalFileName: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -248,6 +255,7 @@ export const linkRouter = createTRPCRouter({
           expiredAt,
           fileName: input.fileName,
           password: hashPassword,
+          originalFileName: input.originalFileName,
         },
       });
 

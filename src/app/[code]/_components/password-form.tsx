@@ -13,9 +13,12 @@ import { ErrorDialog } from "@/components/error-dialog";
 export function PasswordForm({ code }: { code: string }) {
   const link = api.link.getLinkInfoWithPassword.useMutation({
     onSuccess: (data) => {
-      const { destinationUrl, fileName, content } = data;
-      setDestinationUrl(destinationUrl);
+      const { destinationUrl, file, content } = data;
+      const { fileName, originalFileName } = file;
+
       setFileName(fileName);
+      setOriginalFileName(originalFileName);
+      setDestinationUrl(destinationUrl);
       setContent(content);
       setLoading(false);
     },
@@ -26,6 +29,7 @@ export function PasswordForm({ code }: { code: string }) {
   });
 
   const [destinationUrl, setDestinationUrl] = useState<string | null>(null);
+  const [originalFileName, setOriginalFileName] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [content, setContent] = useState<string | null>(null);
   const [password, setPassword] = useState("");
@@ -44,8 +48,10 @@ export function PasswordForm({ code }: { code: string }) {
     redirect(destinationUrl);
   }
 
-  if (fileName) {
-    return <FileDisplay fileName={fileName} />;
+  if (fileName && originalFileName) {
+    return (
+      <FileDisplay fileName={fileName} originalFileName={originalFileName} />
+    );
   }
 
   if (content) {

@@ -8,14 +8,19 @@ import { NoteDisplay } from "./note-display";
 export async function PasswordlessDisplay({ code }: { code: string }) {
   const linkInfo = await api.link.getLinkInfo({ code });
 
-  const { destinationUrl, fileName, content } = linkInfo;
+  const { destinationUrl, file, content } = linkInfo;
 
   if (destinationUrl) {
     redirect(destinationUrl);
   }
 
-  if (fileName) {
-    return <FileDisplay fileName={fileName} />;
+  if (file?.fileName && file.originalFileName) {
+    return (
+      <FileDisplay
+        fileName={file.fileName}
+        originalFileName={file.originalFileName}
+      />
+    );
   }
 
   if (content) {
