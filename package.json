@@ -39,7 +39,7 @@
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^3.3.3",
     "lucide-react": "^0.513.0",
-    "next": "15.2.6",
+    "next": "^15.2.8",
     "random-words": "^2.0.1",
     "react": "19.0.1",
     "react-dom": "19.0.1",
