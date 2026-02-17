@@ -1,4 +1,4 @@
-import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import type { PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import axios from "axios";
@@ -37,31 +37,57 @@ const getExpiredAtDateTime = (duration: number) => {
   return expiredAt;
 };
 
-const deleteExpiredFiles = async (db: PrismaClient, now: Date) => {
-  const expiredFiles = await db.link.findMany({
-    select: { fileName: true },
-    where: {
-      expiredAt: { lt: now },
-      fileName: { not: null },
-    },
-  });
+const deleteExpiredFiles = async () => {
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const objectsToDelete: Array<{ Key: string }> = [];
+  let continuationToken: string | undefined;
 
-  if (expiredFiles.length > 0) {
-    const objectsToDelete = expiredFiles.map(({ fileName }) => ({
-      Key: fileName ? `uploads/${fileName}` : "",
-    }));
-
-    const command = new DeleteObjectsCommand({
+  // List all objects with pagination support
+  do {
+    const listCommand = new ListObjectsV2Command({
       Bucket: env.CLOUDFLARE_R2_BUCKET_NAME,
-      Delete: {
-        Objects: objectsToDelete,
-        Quiet: false,
-      },
+      Prefix: "uploads/",
+      ContinuationToken: continuationToken,
     });
 
-    const response = await r2Client.send(command);
-    if (response.Errors && response.Errors.length > 0) {
-      console.error("Errors during multi-object delete:", response.Errors);
+    const listResponse = await r2Client.send(listCommand);
+
+    if (listResponse.Contents) {
+      // Filter objects older than 24 hours
+      for (const object of listResponse.Contents) {
+        if (
+          object.Key &&
+          object.LastModified &&
+          object.LastModified < twentyFourHoursAgo
+        ) {
+          objectsToDelete.push({ Key: object.Key });
+        }
+      }
+    }
+
+    continuationToken = listResponse.NextContinuationToken;
+  } while (continuationToken);
+
+  // Delete objects in batches of 1000 (S3/R2 limit)
+  if (objectsToDelete.length > 0) {
+    for (let i = 0; i < objectsToDelete.length; i += 1000) {
+      const batch = objectsToDelete.slice(i, i + 1000);
+
+      const deleteCommand = new DeleteObjectsCommand({
+        Bucket: env.CLOUDFLARE_R2_BUCKET_NAME,
+        Delete: {
+          Objects: batch,
+          Quiet: false,
+        },
+      });
+
+      const deleteResponse = await r2Client.send(deleteCommand);
+      if (deleteResponse.Errors && deleteResponse.Errors.length > 0) {
+        console.error(
+          "Errors during multi-object delete:",
+          deleteResponse.Errors,
+        );
+      }
     }
   }
 };
@@ -172,7 +198,7 @@ export const linkRouter = createTRPCRouter({
     const note = await ctx.db.createdLinkLog.count({ where: { type: "note" } });
     const active = await ctx.db.link.count();
 
-    await deleteExpiredFiles(ctx.db, now);
+    await deleteExpiredFiles();
     await ctx.db.link.deleteMany({ where: { expiredAt: { lt: now } } });
 
     return { url: url + 7889, file: file + 252, note, active };
